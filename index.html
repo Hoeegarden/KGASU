@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моё расписание — Ветвь 2</title>
+    <title>Моё расписание — КГАСУ</title>
     
     <!-- Иконка-эмодзи для вкладки -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏗️</text></svg>">
@@ -213,6 +213,38 @@
         }
 
         .hidden-lesson { display: none !important; }
+
+        /* Футер / Дисклеймер */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--secondary-text);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .tg-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--btn-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .tg-link:hover {
+            border-color: var(--accent-color);
+            opacity: 0.85;
+        }
 
         @media (min-width: 600px) {
             .lesson { flex-direction: row; align-items: flex-start; }
@@ -569,6 +601,16 @@
                     <div class="subject-title">Технологии КНАУФ (Лабораторные)</div>
                     доц. Халиуллин М. И. • БОКС-3
                 </div>
+            </div>
+        </div>
+
+        <!-- Нижний блок (Футер) -->
+        <div class="footer">
+            <a href="https://t.me/ваш_логин" target="_blank" class="tg-link">
+                ✈️ Связаться в Telegram
+            </a>
+            <div>
+                Неофициальный студенческий проект. Сайт не связан с администрацией Казанского государственного архитектурно-строительного университета. Расписание носит информационный характер, актуальную информацию уточняйте на официальных ресурсах вуза.
             </div>
         </div>
 
