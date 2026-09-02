@@ -104,6 +104,41 @@
             border-color: var(--accent-color);
         }
 
+        /* Секция связи с Telegram снизу */
+        .footer-telegram {
+            text-align: center;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .footer-note {
+            font-size: 0.85em;
+            color: var(--secondary-text);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .telegram-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #0088cc;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-decoration: none;
+            opacity: 0.85;
+            transition: opacity 0.2s, background-color 0.3s ease;
+        }
+        .telegram-button:hover {
+            background-color: #006699;
+            opacity: 1;
+        }
+
         /* Выбор цвета (Шторка) */
         .color-picker-wrapper { position: relative; display: inline-block; }
 
@@ -746,6 +781,16 @@
                     БОКС-3
                 </div>
             </div>
+        </div>
+
+        <!-- Текст-предупреждение и кнопка связи снизу под расписанием -->
+        <div class="footer-telegram">
+            <div class="footer-note">
+                Данное расписание может изменяться, оно не обновляется автоматически. Если вы нашли какие-то недочеты в нем, то можете сообщить об этом
+            </div>
+            <a href="https://t.me/buenosdilas" target="_blank" class="telegram-button" title="Написать в Telegram">
+                ✈️ Связь с автором
+            </a>
         </div>
 
     </div>
