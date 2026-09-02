@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моё расписание — Ветвь 2</title>
+    
+    <!-- Иконка-эмодзи для вкладки -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏗️</text></svg>">
+
+    <style>
+        :root {
+            /* Базовые цвета светлой темы */
+            --bg-color: #f6f8fa;
+            --text-color: #24292e;
+            --card-bg: white;
+            --border-color: #e1e4e8;
+            --secondary-text: #586069;
+            --lesson-border: #eaecef;
+            --tab-bg: #e1e4e8;
+            --tab-text: #24292e;
+            --btn-bg: #ffffff;
+            --btn-border: #d0d7de;
+
+            /* Акцентные цвета по умолчанию (Синий) */
+            --accent-color: #0969da;
+            --accent-gradient-start: #0969da;
+            --accent-gradient-end: #033d8b;
+        }
+
+        body.dark-theme {
+            /* Базовые цвета темной темы */
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --secondary-text: #8b949e;
+            --lesson-border: #21262d;
+            --tab-bg: #21262d;
+            --tab-text: #c9d1d9;
+            --btn-bg: #21262d;
+            --btn-border: #30363d;
+
+            /* Акцентные цвета по умолчанию для темной темы */
+            --accent-color: #58a6ff;
+            --accent-gradient-start: #1f6feb;
+            --accent-gradient-end: #113d80;
+        }
+
+        /* Цветовые темы */
+        body[data-color="red"] { --accent-color: #cf222e; --accent-gradient-start: #cf222e; --accent-gradient-end: #a40e26; }
+        body.dark-theme[data-color="red"] { --accent-color: #ff7b72; --accent-gradient-start: #ff7b72; --accent-gradient-end: #b31d28; }
+
+        body[data-color="green"] { --accent-color: #1a7f37; --accent-gradient-start: #1a7f37; --accent-gradient-end: #115822; }
+        body.dark-theme[data-color="green"] { --accent-color: #3fb950; --accent-gradient-start: #3fb950; --accent-gradient-end: #238636; }
+
+        body[data-color="yellow"] { --accent-color: #9a6700; --accent-gradient-start: #9a6700; --accent-gradient-end: #734c00; }
+        body.dark-theme[data-color="yellow"] { --accent-color: #d29922; --accent-gradient-start: #d29922; --accent-gradient-end: #9e6a03; }
+
+        body[data-color="purple"] { --accent-color: #8250df; --accent-gradient-start: #8250df; --accent-gradient-end: #5a32a3; }
+        body.dark-theme[data-color="purple"] { --accent-color: #bc8cff; --accent-gradient-start: #bc8cff; --accent-gradient-end: #8957e5; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .container { max-width: 800px; margin: 0 auto; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 { color: var(--accent-color); margin: 0; font-size: 1.8em; transition: color 0.3s; }
+
+        .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+        .btn {
+            background-color: var(--btn-bg);
+            color: var(--text-color);
+            border: 1px solid var(--btn-border);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn:hover { opacity: 0.8; }
+        
+        .btn.active-mode {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        /* Выбор цвета (Шторка) */
+        .color-picker-wrapper { position: relative; display: inline-block; }
+
+        .color-picker-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--card-bg);
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--btn-border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.25s ease-in-out;
+        }
+
+        .color-picker-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+
+        .color-btn {
+            width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 0;
+        }
+        .color-btn:hover { transform: scale(1.15); }
+        .color-btn.active-color { box-shadow: 0 0 0 2px var(--bg-color), 0 0 0 4px var(--accent-color); }
+        .color-btn.blue { background-color: #0969da; }
+        .color-btn.red { background-color: #cf222e; }
+        .color-btn.green { background-color: #1a7f37; }
+        .color-btn.yellow { background-color: #d29922; }
+        .color-btn.purple { background-color: #8250df; }
+
+        .live-banner {
+            background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
+            color: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: background 0.3s;
+        }
+        .live-banner .subject-info { color: rgba(255, 255, 255, 0.9); }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+
+        .tab-btn {
+            background-color: var(--tab-bg);
+            color: var(--tab-text);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active { background-color: var(--accent-color); color: #ffffff; }
+
+        .day-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .day-title {
+            font-size: 1.5em; color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px; margin-top: 0; margin-bottom: 15px;
+        }
+        
+        .lesson { display: flex; flex-direction: column; padding: 12px 0; border-bottom: 1px solid var(--lesson-border); }
+        .lesson:last-child { border-bottom: none; }
+        .time { font-weight: bold; color: var(--accent-color); margin-bottom: 5px; font-size: 1.1em; transition: color 0.3s; }
+        .subject-info { color: var(--secondary-text); }
+        .subject-title { font-weight: 600; color: var(--text-color); font-size: 1.05em; }
+        
+        /* Бейджи подгрупп */
+        .subgroup-badge {
+            display: inline-block;
+            font-size: 0.75em;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .badge-common { background-color: #8250df22; color: #8250df; }
+        .badge-sub1 { background-color: #0969da22; color: var(--accent-color); }
+        .badge-sub2 { background-color: #1a7f3722; color: #1a7f37; }
+
+        .hidden-lesson { display: none !important; }
+
+        @media (min-width: 600px) {
+            .lesson { flex-direction: row; align-items: flex-start; }
+            .time { min-width: 130px; margin-bottom: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="header">
+            <h1>🏗️ Расписание КГАСУ</h1>
+            <div class="controls">
+                <button id="today-btn" class="btn" title="Вернуться к текущему дню и неделе">📅 Сегодня</button>
+                <button id="week-toggle" class="btn" title="Нажмите, чтобы сменить неделю">Загрузка...</button>
+                <button id="subgroup-toggle" class="btn" title="Переключить подгруппу">👥 Подгруппа: Все</button>
+                
+                <!-- Выпадающая шторка выбора цвета -->
+                <div class="color-picker-wrapper">
+                    <button id="color-menu-btn" class="btn" title="Выбрать цвет акцента">🎨</button>
+                    <div id="color-dropdown" class="color-picker-dropdown">
+                        <button class="color-btn blue" data-set-color="blue" title="Синий"></button>
+                        <button class="color-btn red" data-set-color="red" title="Красный"></button>
+                        <button class="color-btn green" data-set-color="green" title="Зеленый"></button>
+                        <button class="color-btn yellow" data-set-color="yellow" title="Желтый"></button>
+                        <button class="color-btn purple" data-set-color="purple" title="Фиолетовый"></button>
+                    </div>
+                </div>
+
+                <button id="theme-toggle" class="btn">🌙</button>
+            </div>
+        </div>
+
+        <div id="live-banner" class="live-banner"></div>
+
+        <!-- Навигация по дням -->
+        <div class="tabs">
+            <button class="tab-btn" data-day="monday" onclick="showDay('monday', this)">Пн</button>
+            <button class="tab-btn" data-day="tuesday" onclick="showDay('tuesday', this)">Вт</button>
+            <button class="tab-btn" data-day="wednesday" onclick="showDay('wednesday', this)">Ср</button>
+            <button class="tab-btn" data-day="thursday" onclick="showDay('thursday', this)">Чт</button>
+            <button class="tab-btn" data-day="friday" onclick="showDay('friday', this)">Пт</button>
+            <button class="tab-btn" data-day="saturday" onclick="showDay('saturday', this)">Сб</button>
+        </div>
+
+        <!-- ПОНЕДЕЛЬНИК -->
+        <div id="monday" class="day-card">
+            <h2 class="day-title">Понедельник</h2>
+            
+            <!-- Чётная неделя -->
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">8:00–9:30</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1</span>
+                    <div class="subject-title">Строительные материалы (лабораторные)</div>
+                    НОЦ «Долговечность»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">9:40–11:10</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (до 07.11)</span>
+                    <div class="subject-title">Инженерная геология (лабораторные)</div>
+                    ауд. 2-110
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">8:00–9:30</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    4-127 НОЦ «Механика»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">9:40–11:10</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2</span>
+                    <div class="subject-title">Информационные технологии в профессиональной деятельности (практические)</div>
+                    ауд. 4-302
+                </div>
+            </div>
+
+            <!-- Нечётная неделя -->
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">8:00–9:30</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    4-127 НОЦ «Механика»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">9:40–11:10</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Техническая механика (практические)</div>
+                    4-127 НОЦ «Механика»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Информационные технологии в профессиональной деятельности (практические)</div>
+                    ауд. 4-302
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    ауд. 4-125
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    4-127 НОЦ «Механика»
+                </div>
+            </div>
+            
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">8:00–9:30</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2</span>
+                    <div class="subject-title">Информационные технологии в профессиональной деятельности (практические)</div>
+                    ауд. 4-302
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">9:40–11:10</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2 (до 31.10)</span>
+                    <div class="subject-title">Инженерная геология (лабораторные)</div>
+                    2-001 НОЦ «Основы»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    ауд. 4-125
+                </div>
+            </div>
+        </div>
+
+        <!-- ВТОРНИК (Общие) -->
+        <div id="tuesday" class="day-card">
+            <h2 class="day-title">Вторник</h2>
+            <div class="lesson" data-week-type="both" data-subgroup="all">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Обе подгруппы</span>
+                    <div class="subject-title">Элективные курсы по физической культуре и спорту</div>
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="all">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Чётная неделя • Обе подгруппы</span>
+                    <div class="subject-title">Технологии КНАУФ (лекции)</div>
+                    ауд. 2-402
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="all">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Нечётная неделя • Обе подгруппы</span>
+                    <div class="subject-title">Экология (лекции)</div>
+                    ауд. 4-122 «Форум»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="both" data-subgroup="all">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Обе подгруппы</span>
+                    <div class="subject-title">Техническая механика (лекции)</div>
+                    ауд. 2-303
+                </div>
+            </div>
+            <div class="lesson" data-week-type="both" data-subgroup="all">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Обе подгруппы</span>
+                    <div class="subject-title">Инженерная геология (лекции)</div>
+                    ауд. 2-303
+                </div>
+            </div>
+        </div>
+
+        <!-- СРЕДА -->
+        <div id="wednesday" class="day-card">
+            <h2 class="day-title">Среда</h2>
+            <!-- Чётная -->
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    4-127 НОЦ «Механика»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1</span>
+                    <div class="subject-title">Техническая механика (практические)</div>
+                    ауд. 4-225
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    ауд. 4-233
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1</span>
+                    <div class="subject-title">Строительные материалы (лабораторные)</div>
+                    1-22 НОЦ «Долговечность»
+                </div>
+            </div>
+            
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (до 07.11)</span>
+                    <div class="subject-title">Экология (практические)</div>
+                    ауд. 1-41
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (с 16.11)</span>
+                    <div class="subject-title">Экология (лабораторные)</div>
+                    ауд. 1-41
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2</span>
+                    <div class="subject-title">Строительные материалы (лабораторные)</div>
+                    1-21 НОЦ «Долговечность»
+                </div>
+            </div>
+
+            <!-- Нечётная -->
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    ауд. 4-233
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Техническая механика (практические)</div>
+                    ауд. 4-111
+                </div>
+            </div>
+            
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2 (до 03.10)</span>
+                    <div class="subject-title">Экология (лабораторные)</div>
+                    ауд. 1-39
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2</span>
+                    <div class="subject-title">Метрология, стандартизация, сертификация и управление качеством (практические)</div>
+                    ауд. 2-309
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2</span>
+                    <div class="subject-title">Философия (практические)</div>
+                    ауд. 2-210
+                </div>
+            </div>
+        </div>
+
+        <!-- ЧЕТВЕРГ -->
+        <div id="thursday" class="day-card">
+            <h2 class="day-title">Четверг</h2>
+            <!-- Чётная -->
+            <div class="lesson" data-week-type="even" data-subgroup="all">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Чётная • Обе подгруппы</span>
+                    <div class="subject-title">Экология (лекции)</div>
+                    ауд. 1-44
+                </div>
+            </div>
+            <!-- Нечётная -->
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1 (с 12.10)</span>
+                    <div class="subject-title">Экология (практические)</div>
+                    ауд. 1-41
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1 (до 03.10)</span>
+                    <div class="subject-title">Экология (лабораторные)</div>
+                    ауд. 1-41
+                </div>
+            </div>
+            <!-- Общие для обеих недель -->
+            <div class="lesson" data-week-type="both" data-subgroup="all">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Обе подгруппы</span>
+                    <div class="subject-title">Сопротивление материалов (лекции)</div>
+                    ауд. 5-310
+                </div>
+            </div>
+            <div class="lesson" data-week-type="both" data-subgroup="all">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Обе подгруппы</span>
+                    <div class="subject-title">Философия (лекции)</div>
+                    ауд. 4-122 «Форум»
+                </div>
+            </div>
+            <div class="lesson" data-week-type="both" data-subgroup="all">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Обе подгруппы</span>
+                    <div class="subject-title">Информационные технологии в профессиональной деятельности (лекции)</div>
+                    ауд. 4-122 «Форум»
+                </div>
+            </div>
+        </div>
+
+        <!-- ПЯТНИЦА -->
+        <div id="friday" class="day-card">
+            <h2 class="day-title">Пятница</h2>
+            <!-- Чётная -->
+            <div class="lesson" data-week-type="even" data-subgroup="all">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Чётная • Обе подгруппы</span>
+                    <div class="subject-title">Строительные материалы (лекции)</div>
+                    ауд. 2-402
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="all">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Чётная • Обе подгруппы</span>
+                    <div class="subject-title">Метрология, стандартизация, сертификация и управление качеством (лекции)</div>
+                    ауд. 2-402
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (до 07.11)</span>
+                    <div class="subject-title">Инженерная геология (лабораторные)</div>
+                    ауд. 2-114
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (с 16.11)</span>
+                    <div class="subject-title">Инженерная геология (практические)</div>
+                    ауд. 2-114
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    ауд. 4-233
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (до 07.11)</span>
+                    <div class="subject-title">Инженерная геология (лабораторные)</div>
+                    ауд. 2-110
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (с 16.11)</span>
+                    <div class="subject-title">Инженерная геология (практические)</div>
+                    ауд. 2-110
+                </div>
+            </div>
+
+            <!-- Нечётная -->
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Философия (практические)</div>
+                    ауд. 2-214а
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Метрология, стандартизация, сертификация и управление качеством (практические)</div>
+                    ауд. 2-309
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1</span>
+                    <div class="subject-title">Строительные материалы (лабораторные)</div>
+                    1-21 НОЦ «Долговечность»
+                </div>
+            </div>
+            
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2</span>
+                    <div class="subject-title">Сопротивление материалов (лабораторные)</div>
+                    ауд. 4-233
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">18:50–20:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2</span>
+                    <div class="subject-title">Строительные материалы (практические)</div>
+                    1-5 НОЦ «Долговечность»
+                </div>
+            </div>
+            
+            <div class="lesson" data-week-type="odd" data-subgroup="all">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Нечётная • Обе подгруппы</span>
+                    <div class="subject-title">Строительные материалы (лекции)</div>
+                    ауд. 2-402
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="all">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-common">Нечётная • Обе подгруппы</span>
+                    <div class="subject-title">Метрология, стандартизация, сертификация и управление качеством (лекции)</div>
+                    ауд. 2-402
+                </div>
+            </div>
+        </div>
+
+        <!-- СУББОТА -->
+        <div id="saturday" class="day-card">
+            <h2 class="day-title">Суббота</h2>
+            <!-- Чётная -->
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (с 19.10 по 21.11)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="1">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (с 19.10 по 21.11)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (до 10.10)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (до 10.10)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (до 03.10)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            <div class="lesson" data-week-type="even" data-subgroup="2">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (до 03.10)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+
+            <!-- Нечётная -->
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">11:45–13:15</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1 (с 12.10 по 14.11)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="1">
+                <div class="time">13:50–15:20</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1 (с 12.10 по 14.11)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">15:30–17:00</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2 (до 10.10)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+            <div class="lesson" data-week-type="odd" data-subgroup="2">
+                <div class="time">17:10–18:40</div>
+                <div class="subject-info">
+                    <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2 (до 10.10)</span>
+                    <div class="subject-title">Технологии КНАУФ (лабораторные)</div>
+                    БОКС-3
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentRealWeekNum = 1;
+        let displayedWeekNum = 1;
+        let currentSubgroupFilter = 'all'; // 'all', '1', '2'
+
+        function initWeekData() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const mskDate = new Date(utc + (3600000 * 3));
+            
+            const startOfSemester = new Date(2026, 8, 1); // 1 сентября 2026
+            const diffTime = mskDate.getTime() - startOfSemester.getTime();
+            let currentWeekNum = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7)) + 1;
+            
+            if (currentWeekNum < 1) currentWeekNum = 1;
+            currentRealWeekNum = currentWeekNum;
+            displayedWeekNum = currentRealWeekNum;
+        }
+
+        function updateScheduleUI() {
+            const weekToggle = document.getElementById('week-toggle');
+            const subgroupToggle = document.getElementById('subgroup-toggle');
+
+            const isEven = (displayedWeekNum % 2 === 0);
+            const weekTypeStr = isEven ? 'Чётная' : 'Нечётная';
+            const isCurrent = (displayedWeekNum === currentRealWeekNum) ? ' (Текущая)' : '';
+            weekToggle.textContent = `${displayedWeekNum} нед. (${weekTypeStr})${isCurrent}`;
+
+            if (currentSubgroupFilter === 'all') {
+                subgroupToggle.textContent = '👥 Подгруппа: Все';
+            } else {
+                subgroupToggle.textContent = `👥 Подгруппа: ${currentSubgroupFilter}`;
+            }
+
+            document.querySelectorAll('.lesson').forEach(lesson => {
+                const wType = lesson.getAttribute('data-week-type'); // 'even', 'odd', 'both'
+                const sGroup = lesson.getAttribute('data-subgroup'); // '1', '2', 'all'
+                
+                let hide = false;
+
+                // Фильтр по неделе
+                if (wType === 'even' && !isEven) hide = true;
+                if (wType === 'odd' && isEven) hide = true;
+
+                // Фильтр по подгруппе
+                if (currentSubgroupFilter !== 'all') {
+                    if (sGroup !== 'all' && sGroup !== currentSubgroupFilter) {
+                        hide = true;
+                    }
+                }
+
+                if (hide) {
+                    lesson.classList.add('hidden-lesson');
+                } else {
+                    lesson.classList.remove('hidden-lesson');
+                }
+            });
+        }
+
+        document.getElementById('week-toggle').addEventListener('click', () => {
+            displayedWeekNum++;
+            if (displayedWeekNum > 18) displayedWeekNum = 1;
+            updateScheduleUI();
+        });
+
+        document.getElementById('subgroup-toggle').addEventListener('click', () => {
+            if (currentSubgroupFilter === 'all') {
+                currentSubgroupFilter = '1';
+            } else if (currentSubgroupFilter === '1') {
+                currentSubgroupFilter = '2';
+            } else {
+                currentSubgroupFilter = 'all';
+            }
+            updateScheduleUI();
+        });
+
+        document.getElementById('today-btn').addEventListener('click', () => {
+            displayedWeekNum = currentRealWeekNum;
+            currentSubgroupFilter = 'all';
+            updateScheduleUI();
+
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const mskDate = new Date(utc + (3600000 * 3));
+            let currentDayId = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][mskDate.getDay()];
+            if (currentDayId === 'sunday') currentDayId = 'monday';
+
+            const btn = document.querySelector(`.tab-btn[data-day="${currentDayId}"]`);
+            showDay(currentDayId, btn);
+        });
+
+        function showDay(dayId, btnElement) {
+            document.querySelectorAll('.day-card').forEach(card => card.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(dayId).style.display = 'block';
+            if (btnElement) btnElement.classList.add('active');
+        }
+
+        /* Темы */
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-theme');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            if (body.classList.contains('dark-theme')) {
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+            }
+        });
+
+        /* Выбор цвета */
+        const colorMenuBtn = document.getElementById('color-menu-btn');
+        const colorDropdown = document.getElementById('color-dropdown');
+        const colorBtns = document.querySelectorAll('.color-btn');
+        const savedColor = localStorage.getItem('accent-color') || 'blue';
+
+        colorMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            colorDropdown.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!colorDropdown.contains(e.target) && e.target !== colorMenuBtn) {
+                colorDropdown.classList.remove('open');
+            }
+        });
+
+        function setAccentColor(color) {
+            document.body.setAttribute('data-color', color);
+            localStorage.setItem('accent-color', color);
+            colorBtns.forEach(btn => {
+                if (btn.getAttribute('data-set-color') === color) btn.classList.add('active-color');
+                else btn.classList.remove('active-color');
+            });
+        }
+
+        colorBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setAccentColor(btn.getAttribute('data-set-color'));
+                colorDropdown.classList.remove('open');
+            });
+        });
+        setAccentColor(savedColor);
+
+        /* Живой статус пары */
+        function updateLiveStatus() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const mskDate = new Date(utc + (3600000 * 3));
+            
+            const dayIdx = mskDate.getDay();
+            const hours = mskDate.getHours();
+            const minutes = mskDate.getMinutes();
+            const currentMins = hours * 60 + minutes;
+            const timeStr = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+            
+            const daysMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const currentDayId = daysMap[dayIdx];
+            const banner = document.getElementById('live-banner');
+            
+            if (currentDayId === 'sunday') {
+                banner.innerHTML = `<strong>🕒 ${timeStr} (МСК):</strong> Воскресенье, пар нет. Отдыхаем! 🎉`;
+                return;
+            }
+
+            const dayCard = document.getElementById(currentDayId);
+            if (!dayCard) return;
+
+            const isEvenReal = (currentRealWeekNum % 2 === 0);
+            const lessons = dayCard.querySelectorAll('.lesson');
+            let activeLessonFound = false;
+
+            lessons.forEach(lesson => {
+                const wType = lesson.getAttribute('data-week-type');
+                if (wType === 'even' && !isEvenReal) return;
+                if (wType === 'odd' && isEvenReal) return;
+
+                const timeText = lesson.querySelector('.time').innerText;
+                const timeMatch = timeText.match(/(\d{1,2})[.:](\d{2})\s*[-–]\s*(\d{1,2})[.:](\d{2})/);
+                
+                if (timeMatch) {
+                    const startMins = parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]);
+                    const endMins = parseInt(timeMatch[3]) * 60 + parseInt(timeMatch[4]);
+                    
+                    if (currentMins >= startMins && currentMins <= endMins) {
+                        activeLessonFound = true;
+                        const timeLeft = endMins - currentMins;
+                        const subjectHTML = lesson.querySelector('.subject-info').innerHTML;
+                        
+                        banner.innerHTML = `
+                            <div style="margin-bottom: 6px;"><strong>🕒 ${timeStr} (МСК) — Идёт пара (осталось ${timeLeft} мин.):</strong></div>
+                            <div class="subject-info">${subjectHTML}</div>
+                        `;
+                    }
+                }
+            });
+
+            if (!activeLessonFound) {
+                banner.innerHTML = `<strong>🕒 ${timeStr} (МСК):</strong> Сейчас пар нет или идет перемена.`;
+            }
+        }
+
+        window.onload = () => {
+            initWeekData();
+            updateScheduleUI();
+
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const mskDate = new Date(utc + (3600000 * 3));
+            let currentDayId = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][mskDate.getDay()];
+            if (currentDayId === 'sunday') currentDayId = 'monday';
+
+            const btn = document.querySelector(`.tab-btn[data-day="${currentDayId}"]`);
+            showDay(currentDayId, btn);
+
+            updateLiveStatus();
+            setInterval(updateLiveStatus, 10000);
+        };
+    </script>
+</body>
+</html>
