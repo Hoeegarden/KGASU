@@ -928,7 +928,9 @@
 
             const isEvenReal = (currentRealWeekNum % 2 === 0);
             const lessons = dayCard.querySelectorAll('.lesson');
-            let activeLessonFound = false;
+            
+            // Группируем текущие активные пары по временным интервалам
+            let activeTimeSlots = {};
 
             lessons.forEach(lesson => {
                 const wType = lesson.getAttribute('data-week-type');
@@ -943,19 +945,35 @@
                     const endMins = parseInt(timeMatch[3]) * 60 + parseInt(timeMatch[4]);
                     
                     if (currentMins >= startMins && currentMins <= endMins) {
-                        activeLessonFound = true;
                         const timeLeft = endMins - currentMins;
-                        const subjectHTML = lesson.querySelector('.subject-info').innerHTML;
-                        
-                        banner.innerHTML = `
-                            <div style="margin-bottom: 6px;"><strong>🕒 ${timeStr} (МСК) — Идёт пара (осталось ${timeLeft} мин.):</strong></div>
-                            <div class="subject-info">${subjectHTML}</div>
-                        `;
+                        if (!activeTimeSlots[timeText]) {
+                            activeTimeSlots[timeText] = { timeLeft, items: [] };
+                        }
+                        activeTimeSlots[timeText].items.push(lesson.querySelector('.subject-info').innerHTML);
                     }
                 }
             });
 
-            if (!activeLessonFound) {
+            const timeKeys = Object.keys(activeTimeSlots);
+            if (timeKeys.length > 0) {
+                // Берем первый попавшийся активный слот времени
+                const tKey = timeKeys[0];
+                const slotData = activeTimeSlots[tKey];
+                
+                let contentHTML = `<div style="margin-bottom: 6px;"><strong>🕒 ${timeStr} (МСК) — Идёт пара (${tKey}, осталось ${slotData.timeLeft} мин.):</strong></div>`;
+                
+                if (slotData.items.length === 1) {
+                    contentHTML += `<div class="subject-info">${slotData.items[0]}</div>`;
+                } else {
+                    // Если подгрупп несколько или у них разные пары в этот слот
+                    contentHTML += `<div style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;">`;
+                    slotData.items.forEach(item => {
+                        contentHTML += `<div style="background: rgba(255,255,255,0.1); padding: 6px 10px; border-radius: 6px;" class="subject-info">${item}</div>`;
+                    });
+                    contentHTML += `</div>`;
+                }
+                banner.innerHTML = contentHTML;
+            } else {
                 banner.innerHTML = `<strong>🕒 ${timeStr} (МСК):</strong> Сейчас пар нет или идет перемена.`;
             }
         }
