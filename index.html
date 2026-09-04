@@ -10,80 +10,110 @@
 
     <style>
         :root {
-            /* Базовые цвета светлой темы */
             --bg-color: #f6f8fa;
             --text-color: #24292e;
-            --card-bg: white;
+            --card-bg: #ffffff;
             --border-color: #e1e4e8;
-            --secondary-text: #586069;
-            --lesson-border: #eaecef;
-            --tab-bg: #e1e4e8;
+            --secondary-text: #57606a;
+            --lesson-border: #eaeef2;
+            --tab-bg: #eaeef2;
             --tab-text: #24292e;
             --btn-bg: #ffffff;
             --btn-border: #d0d7de;
-
-            /* Акцентные цвета по умолчанию (Синий) */
+            --soft-bg: #f0f3f6;
             --accent-color: #0969da;
             --accent-gradient-start: #0969da;
             --accent-gradient-end: #033d8b;
+            --shadow-soft: 0 8px 24px rgba(31, 35, 40, 0.06);
+            --shadow-focus: 0 10px 26px rgba(31, 35, 40, 0.12);
+            --ease: 220ms cubic-bezier(.2,.8,.2,1);
         }
 
         body.dark-theme {
-            /* Базовые цвета темной темы */
             --bg-color: #0d1117;
-            --text-color: #c9d1d9;
+            --text-color: #e6edf3;
             --card-bg: #161b22;
             --border-color: #30363d;
-            --secondary-text: #8b949e;
-            --lesson-border: #21262d;
+            --secondary-text: #a8b3bf;
+            --lesson-border: #2a3038;
             --tab-bg: #21262d;
-            --tab-text: #c9d1d9;
+            --tab-text: #d5dde5;
             --btn-bg: #21262d;
             --btn-border: #30363d;
-
-            /* Акцентные цвета по умолчанию для темной темы */
+            --soft-bg: #1c2128;
             --accent-color: #58a6ff;
             --accent-gradient-start: #1f6feb;
             --accent-gradient-end: #113d80;
+            --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.18);
+            --shadow-focus: 0 12px 30px rgba(0, 0, 0, 0.32);
         }
 
-        /* Цветовые темы */
         body[data-color="red"] { --accent-color: #cf222e; --accent-gradient-start: #cf222e; --accent-gradient-end: #a40e26; }
         body.dark-theme[data-color="red"] { --accent-color: #ff7b72; --accent-gradient-start: #ff7b72; --accent-gradient-end: #b31d28; }
-
         body[data-color="green"] { --accent-color: #1a7f37; --accent-gradient-start: #1a7f37; --accent-gradient-end: #115822; }
         body.dark-theme[data-color="green"] { --accent-color: #3fb950; --accent-gradient-start: #3fb950; --accent-gradient-end: #238636; }
-
         body[data-color="yellow"] { --accent-color: #9a6700; --accent-gradient-start: #9a6700; --accent-gradient-end: #734c00; }
         body.dark-theme[data-color="yellow"] { --accent-color: #d29922; --accent-gradient-start: #d29922; --accent-gradient-end: #9e6a03; }
-
         body[data-color="purple"] { --accent-color: #8250df; --accent-gradient-start: #8250df; --accent-gradient-end: #5a32a3; }
         body.dark-theme[data-color="purple"] { --accent-color: #bc8cff; --accent-gradient-start: #bc8cff; --accent-gradient-end: #8957e5; }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--accent-color) 5%, transparent) 0, transparent 26rem),
+                radial-gradient(circle at 100% 12%, color-mix(in srgb, var(--accent-color) 4%, transparent) 0, transparent 24rem);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 22px;
             line-height: 1.5;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color .3s ease, color .3s ease, background-image .35s ease;
         }
-        
-        .container { max-width: 800px; margin: 0 auto; }
+
+        button, a, .lesson, .tab-btn, .subgroup-badge, .lesson-type-badge, .room-badge, .live-banner {
+            transition: color var(--ease), background-color var(--ease), border-color var(--ease), box-shadow var(--ease), opacity var(--ease), transform var(--ease);
+        }
+
+        button:focus-visible, a:focus-visible {
+            outline: 3px solid color-mix(in srgb, var(--accent-color) 42%, transparent);
+            outline-offset: 3px;
+        }
+
+        .container { max-width: 840px; margin: 0 auto; }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            padding: 16px 18px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 14px;
+            background: linear-gradient(135deg, var(--card-bg), color-mix(in srgb, var(--accent-color) 7%, var(--card-bg)));
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: var(--shadow-soft);
         }
 
-        h1 { color: var(--accent-color); margin: 0; font-size: 1.8em; transition: color 0.3s; }
+        .brand { min-width: 220px; }
+        h1 {
+            color: var(--accent-color);
+            margin: 0;
+            font-size: clamp(1.5rem, 4vw, 1.9rem);
+            line-height: 1.2;
+            transition: color .3s ease;
+        }
+        .week-subtitle {
+            margin-top: 5px;
+            color: var(--secondary-text);
+            font-size: .88rem;
+            font-weight: 600;
+        }
 
-        .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
         .settings-toggle { display: none; }
         .secondary-controls { display: flex; gap: 8px; align-items: center; }
 
@@ -91,44 +121,47 @@
             background-color: var(--btn-bg);
             color: var(--text-color);
             border: 1px solid var(--btn-border);
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 8px 13px;
+            border-radius: 999px;
             cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: 0.2s;
+            font-size: .9em;
+            font-weight: 650;
+            min-height: 38px;
+            box-shadow: 0 1px 0 rgba(31,35,40,.02);
         }
-        .btn:hover { opacity: 0.8; }
+        .btn:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent-color) 45%, var(--btn-border)); }
+        .btn:active { transform: translateY(0) scale(.98); }
+        #today-btn {
+            background: color-mix(in srgb, var(--accent-color) 10%, var(--btn-bg));
+            border-color: color-mix(in srgb, var(--accent-color) 35%, var(--btn-border));
+            color: var(--accent-color);
+        }
 
-        /* Выбор цвета */
+        .spin-once { animation: spinOnce .42s cubic-bezier(.2,.8,.2,1); }
+        @keyframes spinOnce { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
+
         .color-picker-wrapper { position: relative; display: inline-block; }
-
         .color-picker-dropdown {
             position: absolute;
-            top: calc(100% + 8px);
+            top: calc(100% + 9px);
             right: 0;
             background: var(--card-bg);
             padding: 12px 14px;
-            border-radius: 12px;
+            border-radius: 15px;
             border: 1px solid var(--btn-border);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-focus);
             display: flex;
             gap: 10px;
             align-items: center;
-            z-index: 100;
+            z-index: 120;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(-8px);
-            transition: all 0.25s ease-in-out;
+            transform: translateY(-8px) scale(.98);
         }
-
-        .color-picker-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
-
-        .color-btn {
-            width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; padding: 0;
-        }
-        .color-btn:hover { transform: scale(1.15); }
-        .color-btn.active-color { box-shadow: 0 0 0 2px var(--bg-color), 0 0 0 4px var(--accent-color); }
+        .color-picker-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        .color-btn { width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer; padding: 0; }
+        .color-btn:hover { transform: scale(1.12); }
+        .color-btn.active-color { box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--accent-color); }
         .color-btn.blue { background-color: #0969da; }
         .color-btn.red { background-color: #cf222e; }
         .color-btn.green { background-color: #1a7f37; }
@@ -138,131 +171,210 @@
         .live-banner {
             background: linear-gradient(135deg, var(--accent-gradient-start), var(--accent-gradient-end));
             color: white;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: background 0.3s;
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px color-mix(in srgb, var(--accent-color) 20%, transparent);
+            overflow: hidden;
+            animation: bannerIn .38s ease both;
         }
-        .live-banner .subject-info { color: rgba(255, 255, 255, 0.9); }
+        .live-banner.compact { padding: 11px 16px; border-radius: 14px; box-shadow: 0 5px 16px color-mix(in srgb, var(--accent-color) 13%, transparent); }
+        .live-banner.active-now { transform: translateY(-1px); box-shadow: 0 12px 30px color-mix(in srgb, var(--accent-color) 26%, transparent); }
+        .live-banner.upcoming-soon { box-shadow: 0 10px 26px color-mix(in srgb, var(--accent-color) 22%, transparent); }
+        .live-banner .subject-info { color: rgba(255,255,255,.92); }
+        .live-banner .subject-title { color: #ffffff; }
+        .live-banner .teacher-meta { color: rgba(255,255,255,.78); }
+        .live-banner .lesson-type-badge { background: rgba(255,255,255,.14); color: #ffffff; }
+        .live-banner .room-badge { background: rgba(255,255,255,.94); border-color: rgba(255,255,255,.52); color: #24292e; }
+        @keyframes bannerIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding: 2px 2px 7px;
+            scrollbar-width: thin;
+        }
         .tab-btn {
+            position: relative;
             background-color: var(--tab-bg);
             color: var(--tab-text);
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: bold;
+            border: 1px solid transparent;
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-size: .94em;
+            font-weight: 750;
             cursor: pointer;
-            transition: 0.2s;
             white-space: nowrap;
         }
-        .tab-btn.active { background-color: var(--accent-color); color: #ffffff; }
+        .tab-btn:hover { transform: translateY(-1px); }
+        .tab-btn.active { background-color: var(--accent-color); color: #fff; box-shadow: 0 5px 14px color-mix(in srgb, var(--accent-color) 22%, transparent); }
+        .tab-btn.is-today:not(.active) { border-color: color-mix(in srgb, var(--accent-color) 45%, transparent); }
+        .tab-btn.is-today::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            right: 7px;
+            top: 6px;
+            box-shadow: 0 0 0 2px var(--tab-bg);
+        }
+        .tab-btn.active.is-today::after { background: #fff; box-shadow: 0 0 0 2px var(--accent-color); }
 
         .day-card {
             background: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 18px;
+            padding: 20px 22px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
             display: none;
-            animation: fadeIn 0.3s ease-in-out;
+            animation: cardIn .36s cubic-bezier(.2,.8,.2,1) both;
         }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(8px) scale(.995); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
         .day-title {
-            font-size: 1.5em; color: var(--text-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px; margin-top: 0; margin-bottom: 15px;
+            font-size: 1.38em;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin: 0 0 8px;
+            letter-spacing: -.01em;
         }
-        
+
         .lesson {
             display: flex;
             flex-direction: column;
             position: relative;
-            padding: 12px 0;
+            padding: 16px 10px 16px 15px;
+            margin: 2px 0;
             border-bottom: 1px solid var(--lesson-border);
-            transition: opacity 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+            border-left: 3px solid color-mix(in srgb, var(--accent-color) 72%, transparent);
+            border-radius: 0 12px 12px 0;
+            background: transparent;
         }
-        .lesson:last-child { border-bottom: none; }
-        .lesson.past-lesson { opacity: 0.46; }
-        .lesson.past-lesson:hover { opacity: 0.72; }
+        .lesson:last-child { border-bottom-color: transparent; }
+        .lesson:hover:not(.current-lesson):not(.next-lesson) {
+            background: color-mix(in srgb, var(--accent-color) 3.5%, var(--card-bg));
+            transform: translateX(2px);
+        }
+
+        .lesson.past-lesson { opacity: .48; }
+        .lesson.past-lesson:hover { opacity: .72; }
+
         .lesson.current-lesson, .lesson.next-lesson {
-            margin-left: -10px;
-            margin-right: -10px;
-            padding-left: 14px;
-            padding-right: 82px;
-            border-radius: 8px;
-            box-shadow: inset 4px 0 0 var(--accent-color), 0 0 0 1px var(--border-color);
+            margin: 7px -4px;
+            padding: 16px 88px 16px 18px;
+            border-bottom-color: transparent;
+            border-left-color: var(--accent-color);
+            border-radius: 13px;
+            background: color-mix(in srgb, var(--accent-color) 6%, var(--card-bg));
         }
-        .lesson.next-lesson { box-shadow: inset 3px 0 0 var(--accent-color); }
+        .lesson.current-lesson { box-shadow: inset 4px 0 0 var(--accent-color), var(--shadow-focus); }
+        .lesson.next-lesson { box-shadow: inset 3px 0 0 color-mix(in srgb, var(--accent-color) 75%, transparent), 0 7px 18px rgba(31,35,40,.07); }
         .lesson.current-lesson::after, .lesson.next-lesson::after {
             position: absolute;
-            top: 9px;
-            right: 10px;
-            padding: 2px 7px;
+            top: 12px;
+            right: 12px;
+            padding: 3px 8px;
             border-radius: 999px;
             background: var(--accent-color);
             color: #fff;
-            font-size: 0.72em;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            font-size: .7em;
+            font-weight: 800;
+            letter-spacing: .02em;
+            box-shadow: 0 4px 10px color-mix(in srgb, var(--accent-color) 22%, transparent);
         }
         .lesson.current-lesson::after { content: 'Сейчас'; }
         .lesson.next-lesson::after { content: 'Далее'; }
-        .time { font-weight: bold; color: var(--accent-color); margin-bottom: 5px; font-size: 1.1em; transition: color 0.3s; }
-        .subject-info { color: var(--secondary-text); }
-        .subject-title { font-weight: 600; color: var(--text-color); font-size: 1.05em; }
-        
-        /* Бейджи подгрупп */
+
+        .time {
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 7px;
+            font-size: 1.05em;
+            letter-spacing: .01em;
+            font-variant-numeric: tabular-nums;
+        }
+        .subject-info { color: var(--secondary-text); min-width: 0; }
+        .subject-title {
+            font-weight: 700;
+            color: var(--text-color);
+            font-size: 1.03em;
+            line-height: 1.38;
+            letter-spacing: -.005em;
+        }
+        .lesson-type-badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            gap: 5px;
+            margin: 2px 0 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--accent-color) 8%, var(--soft-bg));
+            color: var(--accent-color);
+            font-size: .74em;
+            font-weight: 800;
+        }
+        .lesson-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px 9px;
+            margin-top: 7px;
+            font-size: .92em;
+        }
+        .teacher-meta { color: var(--secondary-text); }
+        .room-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: var(--soft-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-weight: 700;
+            font-size: .93em;
+        }
+
         .subgroup-badge {
             display: inline-block;
-            font-size: 0.75em;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-bottom: 4px;
+            font-size: .71em;
+            font-weight: 750;
+            padding: 3px 7px;
+            border-radius: 999px;
+            margin-bottom: 2px;
             text-transform: uppercase;
+            letter-spacing: .02em;
+            border: 1px solid transparent;
+            opacity: .88;
         }
-        .badge-common { background-color: #8250df22; color: #8250df; }
-        .badge-sub1 { background-color: rgba(9, 105, 218, 0.15); color: #0969da; }
-        body.dark-theme .badge-sub1 { background-color: rgba(88, 166, 255, 0.2); color: #58a6ff; }
-
-        .badge-sub2 { 
-            background-color: rgba(210, 153, 34, 0.2); 
-            color: #b07200; 
-        }
-        body.dark-theme .badge-sub2 { 
-            background-color: rgba(210, 153, 34, 0.25); 
-            color: #f0b728; 
-        }
+        .badge-common { background: color-mix(in srgb, #8250df 8%, var(--soft-bg)); color: color-mix(in srgb, #8250df 78%, var(--text-color)); border-color: color-mix(in srgb, #8250df 18%, transparent); }
+        .badge-sub1 { background: color-mix(in srgb, #0969da 8%, var(--soft-bg)); color: color-mix(in srgb, #0969da 78%, var(--text-color)); border-color: color-mix(in srgb, #0969da 18%, transparent); }
+        .badge-sub2 { background: color-mix(in srgb, #d29922 10%, var(--soft-bg)); color: color-mix(in srgb, #9a6700 82%, var(--text-color)); border-color: color-mix(in srgb, #d29922 22%, transparent); }
+        body.dark-theme .badge-common { color: #c7a7ff; }
+        body.dark-theme .badge-sub1 { color: #79b8ff; }
+        body.dark-theme .badge-sub2 { color: #e8b949; }
 
         .hidden-lesson { display: none !important; }
 
-        /* Футер / Дисклеймер */
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 34px;
+            padding: 20px 0 8px;
             border-top: 1px solid var(--border-color);
             text-align: center;
-            font-size: 0.85em;
+            font-size: .84em;
             color: var(--secondary-text);
             display: flex;
             flex-direction: column;
             gap: 12px;
             align-items: center;
         }
-
-        .footer-gif {
-            max-width: 100%;
-            max-height: 180px;
-            border-radius: 8px;
-            object-fit: contain;
-        }
-
+        .footer-gif { max-width: 100%; max-height: 180px; border-radius: 12px; object-fit: contain; }
         .tg-link {
             display: inline-flex;
             align-items: center;
@@ -271,61 +383,119 @@
             color: var(--text-color);
             border: 1px solid var(--btn-border);
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: 999px;
             text-decoration: none;
-            font-weight: 600;
-            transition: 0.2s;
+            font-weight: 650;
         }
-        .tg-link:hover {
-            border-color: var(--accent-color);
-            opacity: 0.85;
-        }
+        .tg-link:hover { border-color: var(--accent-color); transform: translateY(-1px); }
 
-        @media (max-width: 599px) {
-            body { padding: 12px; }
-            .header { align-items: stretch; gap: 10px; margin-bottom: 14px; }
-            h1 { width: 100%; font-size: 1.45em; }
-
-            .controls {
-                width: 100%;
-                display: grid;
-                grid-template-columns: minmax(0, 1fr) 46px;
-                gap: 8px;
-            }
-            #today-btn { grid-column: 1; grid-row: 1; }
-            #settings-toggle { grid-column: 2; grid-row: 1; }
-            #week-toggle { grid-column: 1 / -1; grid-row: 2; }
-            #subgroup-toggle { grid-column: 1 / -1; grid-row: 3; }
-            .controls > .btn { min-height: 42px; }
-
-            .settings-toggle { display: inline-flex; align-items: center; justify-content: center; }
-            .secondary-controls {
-                grid-column: 1 / -1;
-                grid-row: 4;
-                display: none;
-                align-items: center;
-                justify-content: flex-end;
-                gap: 8px;
-                padding: 8px;
-                background: var(--card-bg);
-                border: 1px solid var(--border-color);
-                border-radius: 10px;
-            }
-            .secondary-controls.open { display: flex; }
-            .secondary-controls .btn { min-width: 44px; min-height: 40px; }
-            .color-picker-dropdown { right: 0; }
-
-            .live-banner { padding: 13px 14px; margin-bottom: 14px; }
-            .tabs { margin-bottom: 14px; }
-            .tab-btn { padding: 9px 12px; }
-            .day-card { padding: 14px; }
-            .day-title { font-size: 1.3em; }
-            .lesson.current-lesson, .lesson.next-lesson { padding-right: 72px; }
-        }
+        .mobile-nav { display: none; }
 
         @media (min-width: 600px) {
             .lesson { flex-direction: row; align-items: flex-start; }
-            .time { min-width: 130px; margin-bottom: 0; }
+            .time {
+                min-width: 132px;
+                margin: 0 18px 0 0;
+                padding: 2px 18px 2px 0;
+                border-right: 1px solid var(--lesson-border);
+            }
+            .lesson.current-lesson .time, .lesson.next-lesson .time { border-right-color: color-mix(in srgb, var(--accent-color) 28%, var(--lesson-border)); }
+            .subject-info { flex: 1; }
+        }
+
+        @media (max-width: 599px) {
+            body { padding: 10px 10px 84px; }
+            .container { max-width: 100%; }
+            .header { padding: 12px 14px; margin-bottom: 10px; border-radius: 16px; gap: 6px; }
+            .brand { min-width: 0; width: 100%; }
+            h1 { font-size: 1.34rem; }
+            .week-subtitle { font-size: .8rem; margin-top: 3px; }
+
+            /* На телефоне основные действия находятся в нижней панели. */
+            .controls > #today-btn,
+            .controls > #week-toggle,
+            .controls > #subgroup-toggle,
+            .controls > #settings-toggle { display: none; }
+            .controls { width: 0; height: 0; overflow: visible; margin: 0; }
+            .secondary-controls {
+                position: fixed;
+                right: 12px;
+                bottom: 76px;
+                z-index: 250;
+                display: none;
+                align-items: center;
+                gap: 8px;
+                padding: 9px;
+                background: color-mix(in srgb, var(--card-bg) 96%, transparent);
+                border: 1px solid var(--border-color);
+                border-radius: 16px;
+                box-shadow: var(--shadow-focus);
+                backdrop-filter: blur(12px);
+            }
+            .secondary-controls.open { display: flex; animation: popControls .2s ease both; }
+            @keyframes popControls { from { opacity: 0; transform: translateY(7px) scale(.97); } to { opacity: 1; transform: none; } }
+            .secondary-controls .btn { min-width: 42px; min-height: 40px; padding: 8px 10px; }
+            .color-picker-dropdown { right: 0; bottom: calc(100% + 8px); top: auto; transform: translateY(8px) scale(.98); }
+            .color-picker-dropdown.open { transform: translateY(0) scale(1); }
+
+            .live-banner { padding: 13px 14px; margin-bottom: 11px; border-radius: 14px; font-size: .92rem; }
+            .live-banner.compact { padding: 9px 13px; }
+            .tabs { margin-bottom: 11px; gap: 6px; padding-bottom: 5px; }
+            .tab-btn { padding: 8px 10px; font-size: .83em; min-width: max-content; }
+            .tab-btn.is-today::after { width: 5px; height: 5px; right: 5px; top: 5px; }
+
+            .day-card { padding: 13px 12px; border-radius: 16px; }
+            .day-title { font-size: 1.2em; padding: 0 4px 10px; }
+            .lesson { padding: 14px 8px 14px 12px; }
+            .lesson.current-lesson, .lesson.next-lesson { padding: 14px 70px 14px 14px; margin-left: -2px; margin-right: -2px; }
+            .subject-title { font-size: clamp(.92rem, 3.8vw, 1rem); line-height: 1.34; }
+            .lesson-meta { font-size: .86em; gap: 6px; }
+            .room-badge { font-size: .9em; }
+            .subgroup-badge { font-size: .66em; }
+
+            .footer { margin-top: 26px; padding-bottom: 8px; }
+
+            .mobile-nav {
+                position: fixed;
+                left: 50%;
+                bottom: max(8px, env(safe-area-inset-bottom));
+                transform: translateX(-50%);
+                z-index: 220;
+                width: min(calc(100% - 16px), 560px);
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 4px;
+                padding: 7px;
+                background: color-mix(in srgb, var(--card-bg) 94%, transparent);
+                border: 1px solid var(--border-color);
+                border-radius: 20px;
+                box-shadow: 0 12px 36px rgba(0,0,0,.18);
+                backdrop-filter: blur(14px);
+            }
+            .mobile-nav-btn {
+                border: none;
+                background: transparent;
+                color: var(--secondary-text);
+                border-radius: 14px;
+                padding: 6px 3px 5px;
+                min-width: 0;
+                cursor: pointer;
+                font: inherit;
+                font-size: .69rem;
+                font-weight: 750;
+                line-height: 1.1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            .mobile-nav-btn .nav-icon { font-size: 1.15rem; line-height: 1; }
+            .mobile-nav-btn:active { background: color-mix(in srgb, var(--accent-color) 9%, transparent); color: var(--accent-color); }
+            .mobile-nav-btn.is-current { color: var(--accent-color); background: color-mix(in srgb, var(--accent-color) 8%, transparent); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
         }
     </style>
 </head>
@@ -333,7 +503,10 @@
     <div class="container">
         
         <div class="header">
-            <h1>🏗️ Расписание КГАСУ</h1>
+            <div class="brand">
+                <h1>🏗️ Расписание КГАСУ</h1>
+                <div id="week-subtitle" class="week-subtitle">Учебная неделя загружается…</div>
+            </div>
             <div class="controls">
                 <button id="today-btn" class="btn" title="Вернуться к текущему дню и неделе">📅 Сегодня</button>
                 <button id="week-toggle" class="btn" title="Нажмите, чтобы сменить неделю">Загрузка...</button>
@@ -744,6 +917,21 @@
 
     </div>
 
+    <nav class="mobile-nav" aria-label="Быстрая навигация">
+        <button id="mobile-today-btn" class="mobile-nav-btn is-current" type="button" aria-label="Вернуться к сегодняшнему дню">
+            <span class="nav-icon">📅</span><span>Сегодня</span>
+        </button>
+        <button id="mobile-week-btn" class="mobile-nav-btn" type="button" aria-label="Переключить учебную неделю">
+            <span class="nav-icon">🗓️</span><span id="mobile-week-label">Неделя</span>
+        </button>
+        <button id="mobile-subgroup-btn" class="mobile-nav-btn" type="button" aria-label="Переключить подгруппу">
+            <span class="nav-icon">👥</span><span id="mobile-subgroup-label">Все</span>
+        </button>
+        <button id="mobile-settings-btn" class="mobile-nav-btn" type="button" aria-label="Открыть настройки оформления" aria-expanded="false">
+            <span class="nav-icon">⚙️</span><span>Настройки</span>
+        </button>
+    </nav>
+
     <script>
         let currentRealWeekNum = 1;
         let displayedWeekNum = 1;
@@ -842,6 +1030,84 @@
             return `${date.getDate()} ${fullMonthNames[date.getMonth()]}`;
         }
 
+
+        function enhanceLessonPresentation() {
+            document.querySelectorAll('.lesson').forEach(lesson => {
+                const info = lesson.querySelector('.subject-info');
+                const title = lesson.querySelector('.subject-title');
+                if (!info || !title || lesson.dataset.presentationEnhanced === '1') return;
+
+                const rawTitle = title.textContent.trim();
+                let type = 'other';
+                let typeLabel = '📚 Занятие';
+
+                if (/Элективные курсы по физической культуре/i.test(rawTitle)) {
+                    type = 'sport'; typeLabel = '🏃 Физкультура';
+                } else if (/\(Лабораторные\)\s*$/i.test(rawTitle)) {
+                    type = 'lab'; typeLabel = '🧪 Лабораторная';
+                    title.textContent = rawTitle.replace(/\s*\(Лабораторные\)\s*$/i, '');
+                } else if (/\(Практические\)\s*$/i.test(rawTitle)) {
+                    type = 'practice'; typeLabel = '🛠️ Практика';
+                    title.textContent = rawTitle.replace(/\s*\(Практические\)\s*$/i, '');
+                } else if (/\(Лекции\)\s*$/i.test(rawTitle)) {
+                    type = 'lecture'; typeLabel = '📘 Лекция';
+                    title.textContent = rawTitle.replace(/\s*\(Лекции\)\s*$/i, '');
+                }
+
+                lesson.dataset.lessonType = type;
+                const typeBadge = document.createElement('span');
+                typeBadge.className = 'lesson-type-badge';
+                typeBadge.textContent = typeLabel;
+                title.insertAdjacentElement('beforebegin', typeBadge);
+
+                const directTextNodes = Array.from(info.childNodes).filter(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+                const metaText = directTextNodes.map(node => node.textContent.trim()).join(' ').replace(/\s+/g, ' ').trim();
+                directTextNodes.forEach(node => node.remove());
+
+                if (metaText) {
+                    const pieces = metaText.split('•').map(x => x.trim()).filter(Boolean);
+                    const looksLikePlace = s => /(ауд\.?|НОЦ|БОКС|СК\s|«Форум»|^\d+-\d+|^\d+\s*[-–]\s*\d+)/i.test(s);
+                    const placeIndex = pieces.findIndex(looksLikePlace);
+                    const meta = document.createElement('div');
+                    meta.className = 'lesson-meta';
+
+                    if (placeIndex >= 0) {
+                        const teacherParts = pieces.filter((_, i) => i !== placeIndex);
+                        if (teacherParts.length) {
+                            const teacher = document.createElement('span');
+                            teacher.className = 'teacher-meta';
+                            teacher.textContent = `👤 ${teacherParts.join(' • ')}`;
+                            meta.appendChild(teacher);
+                        }
+                        const room = document.createElement('span');
+                        room.className = 'room-badge';
+                        room.textContent = `📍 ${pieces[placeIndex]}`;
+                        meta.appendChild(room);
+                    } else {
+                        const teacher = document.createElement('span');
+                        teacher.className = 'teacher-meta';
+                        teacher.textContent = `👤 ${metaText}`;
+                        meta.appendChild(teacher);
+                    }
+                    title.insertAdjacentElement('afterend', meta);
+                }
+
+                lesson.dataset.presentationEnhanced = '1';
+            });
+        }
+
+        function updateTodayMarker(mskDate = getMskDate()) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('is-today'));
+            if (displayedWeekNum !== currentRealWeekNum) return;
+            const dayId = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][mskDate.getDay()];
+            if (dayId === 'sunday') return;
+            const btn = document.querySelector(`.tab-btn[data-day="${dayId}"]`);
+            if (btn) {
+                btn.classList.add('is-today');
+                btn.title = 'Сегодня';
+            }
+        }
+
         function updateDateLabels() {
             const weekStart = getDateForWeekDay(displayedWeekNum, 'monday');
             const weekEnd = getDateForWeekDay(displayedWeekNum, 'sunday');
@@ -864,6 +1130,14 @@
                     title.textContent = `${fullDayNames[card.id]} • ${formatLongDate(dayDate)}`;
                 }
             });
+
+            const subtitle = document.getElementById('week-subtitle');
+            if (subtitle) subtitle.textContent = `Учебная неделя ${displayedWeekNum} • ${formatWeekRange(weekStart, weekEnd)} • ${weekTypeStr.toLowerCase()}`;
+            const mobileWeekLabel = document.getElementById('mobile-week-label');
+            if (mobileWeekLabel) mobileWeekLabel.textContent = `${displayedWeekNum} нед.`;
+            const mobileTodayBtn = document.getElementById('mobile-today-btn');
+            if (mobileTodayBtn) mobileTodayBtn.classList.toggle('is-current', displayedWeekNum === currentRealWeekNum);
+            updateTodayMarker();
         }
 
         function getLessonTimeRange(lesson) {
@@ -943,6 +1217,8 @@
             } else {
                 subgroupToggle.textContent = `👥 Подгруппа: ${currentSubgroupFilter}`;
             }
+            const mobileSubgroupLabel = document.getElementById('mobile-subgroup-label');
+            if (mobileSubgroupLabel) mobileSubgroupLabel.textContent = currentSubgroupFilter === 'all' ? 'Все' : `Группа ${currentSubgroupFilter}`;
 
             document.querySelectorAll('.lesson').forEach(lesson => {
                 const wType = lesson.getAttribute('data-week-type'); // 'even', 'odd', 'both'
@@ -1019,19 +1295,43 @@
             updateLessonVisualStates();
         }
 
+        document.querySelectorAll('button').forEach(btn => {
+            if (!btn.hasAttribute('type')) btn.setAttribute('type', 'button');
+        });
+
+        const mobileTodayBtn = document.getElementById('mobile-today-btn');
+        const mobileWeekBtn = document.getElementById('mobile-week-btn');
+        const mobileSubgroupBtn = document.getElementById('mobile-subgroup-btn');
+        const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+
+        mobileTodayBtn?.addEventListener('click', () => document.getElementById('today-btn').click());
+        mobileWeekBtn?.addEventListener('click', () => document.getElementById('week-toggle').click());
+        mobileSubgroupBtn?.addEventListener('click', () => document.getElementById('subgroup-toggle').click());
+
         const settingsToggle = document.getElementById('settings-toggle');
         const secondaryControls = document.getElementById('secondary-controls');
 
-        settingsToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
+        function toggleSettingsPanel(e) {
+            if (e) e.stopPropagation();
             const isOpen = secondaryControls.classList.toggle('open');
             settingsToggle.setAttribute('aria-expanded', String(isOpen));
-        });
+            mobileSettingsBtn?.setAttribute('aria-expanded', String(isOpen));
+            const gear = e?.currentTarget;
+            if (gear) {
+                gear.classList.remove('spin-once');
+                void gear.offsetWidth;
+                gear.classList.add('spin-once');
+            }
+        }
+
+        settingsToggle.addEventListener('click', toggleSettingsPanel);
+        mobileSettingsBtn?.addEventListener('click', toggleSettingsPanel);
 
         document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 599 && !secondaryControls.contains(e.target) && e.target !== settingsToggle) {
+            if (window.innerWidth <= 599 && !secondaryControls.contains(e.target) && e.target !== settingsToggle && !mobileSettingsBtn?.contains(e.target)) {
                 secondaryControls.classList.remove('open');
                 settingsToggle.setAttribute('aria-expanded', 'false');
+                mobileSettingsBtn?.setAttribute('aria-expanded', 'false');
             }
         });
 
@@ -1044,6 +1344,9 @@
         }
 
         themeToggle.addEventListener('click', () => {
+            themeToggle.classList.remove('spin-once');
+            void themeToggle.offsetWidth;
+            themeToggle.classList.add('spin-once');
             body.classList.toggle('dark-theme');
             if (body.classList.contains('dark-theme')) {
                 localStorage.setItem('theme', 'dark');
@@ -1088,6 +1391,17 @@
         });
         setAccentColor(savedColor);
 
+        function setBannerState(state, waitMinutes = null) {
+            const banner = document.getElementById('live-banner');
+            banner.classList.remove('compact', 'active-now', 'upcoming-soon');
+            if (state === 'active') banner.classList.add('active-now');
+            if (state === 'finished' || state === 'off') banner.classList.add('compact');
+            if (state === 'upcoming') {
+                if (waitMinutes !== null && waitMinutes <= 60) banner.classList.add('upcoming-soon');
+                else banner.classList.add('compact');
+            }
+        }
+
         /* Живой статус: текущая и следующая пара с учетом подгрупп и календарных ограничений */
         function updateLiveStatus() {
             const mskDate = getMskDate();
@@ -1104,6 +1418,7 @@
             updateLessonVisualStates(mskDate);
 
             if (currentDayId === 'sunday') {
+                setBannerState('off');
                 banner.innerHTML = `<strong>🕒 ${timeStr} (МСК):</strong> Воскресенье, пар нет. Отдыхаем! 🎉`;
                 return;
             }
@@ -1180,6 +1495,7 @@
             }
 
             if (activeForSub1.length > 0 || activeForSub2.length > 0) {
+                setBannerState('active');
                 const firstActive = activeForSub1[0] || activeForSub2[0];
                 const timeLeftMin = Math.max(0, firstActive.end - currentMins);
                 let htmlOutput = `<div style="margin-bottom: 6px;"><strong>🕒 ${timeStr} (МСК) — Идёт пара (осталось ${formatDuration(timeLeftMin)}):</strong></div>`;
@@ -1202,11 +1518,15 @@
                 htmlOutput += renderNextBlock(nextForSub1, nextForSub2, true);
                 banner.innerHTML = htmlOutput;
             } else {
+                const nextEvent = nextForSub1 || nextForSub2;
+                if (nextEvent) setBannerState('upcoming', nextEvent.start - currentMins);
+                else setBannerState('finished');
                 banner.innerHTML = renderNextBlock(nextForSub1, nextForSub2, false);
             }
         }
 
         window.onload = () => {
+            enhanceLessonPresentation();
             initWeekData();
             updateScheduleUI();
 
