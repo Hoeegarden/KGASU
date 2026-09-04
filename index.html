@@ -140,6 +140,18 @@
         .spin-once { animation: spinOnce .42s cubic-bezier(.2,.8,.2,1); }
         @keyframes spinOnce { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
 
+        /* Шестерёнка настроек хранит положение по состоянию панели, а не через одноразовую animation. */
+        #settings-toggle .settings-gear,
+        #mobile-settings-btn .nav-icon {
+            display: inline-block;
+            transform: rotate(0deg);
+            transition: transform .42s cubic-bezier(.2,.8,.2,1);
+        }
+        #settings-toggle[aria-expanded="true"] .settings-gear,
+        #mobile-settings-btn[aria-expanded="true"] .nav-icon {
+            transform: rotate(180deg);
+        }
+
         .color-picker-wrapper { position: relative; display: inline-block; }
         .color-picker-dropdown {
             position: absolute;
@@ -511,7 +523,7 @@
                 <button id="today-btn" class="btn" title="Вернуться к текущему дню и неделе">📅 Сегодня</button>
                 <button id="week-toggle" class="btn" title="Нажмите, чтобы сменить неделю">Загрузка...</button>
                 <button id="subgroup-toggle" class="btn" title="Переключить подгруппу">👥 Подгруппа: Все</button>
-                <button id="settings-toggle" class="btn settings-toggle" title="Настройки оформления" aria-label="Настройки оформления" aria-expanded="false">⚙️</button>
+                <button id="settings-toggle" class="btn settings-toggle" title="Настройки оформления" aria-label="Настройки оформления" aria-expanded="false"><span class="settings-gear">⚙️</span></button>
 
                 <div id="secondary-controls" class="secondary-controls">
                     <div class="color-picker-wrapper">
@@ -1316,12 +1328,6 @@
             const isOpen = secondaryControls.classList.toggle('open');
             settingsToggle.setAttribute('aria-expanded', String(isOpen));
             mobileSettingsBtn?.setAttribute('aria-expanded', String(isOpen));
-            const gear = e?.currentTarget;
-            if (gear) {
-                gear.classList.remove('spin-once');
-                void gear.offsetWidth;
-                gear.classList.add('spin-once');
-            }
         }
 
         settingsToggle.addEventListener('click', toggleSettingsPanel);
