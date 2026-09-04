@@ -84,6 +84,8 @@
         h1 { color: var(--accent-color); margin: 0; font-size: 1.8em; transition: color 0.3s; }
 
         .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .settings-toggle { display: none; }
+        .secondary-controls { display: flex; gap: 8px; align-items: center; }
 
         .btn {
             background-color: var(--btn-bg);
@@ -177,8 +179,40 @@
             padding-bottom: 10px; margin-top: 0; margin-bottom: 15px;
         }
         
-        .lesson { display: flex; flex-direction: column; padding: 12px 0; border-bottom: 1px solid var(--lesson-border); }
+        .lesson {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--lesson-border);
+            transition: opacity 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+        }
         .lesson:last-child { border-bottom: none; }
+        .lesson.past-lesson { opacity: 0.46; }
+        .lesson.past-lesson:hover { opacity: 0.72; }
+        .lesson.current-lesson, .lesson.next-lesson {
+            margin-left: -10px;
+            margin-right: -10px;
+            padding-left: 14px;
+            padding-right: 82px;
+            border-radius: 8px;
+            box-shadow: inset 4px 0 0 var(--accent-color), 0 0 0 1px var(--border-color);
+        }
+        .lesson.next-lesson { box-shadow: inset 3px 0 0 var(--accent-color); }
+        .lesson.current-lesson::after, .lesson.next-lesson::after {
+            position: absolute;
+            top: 9px;
+            right: 10px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: var(--accent-color);
+            color: #fff;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        .lesson.current-lesson::after { content: 'Сейчас'; }
+        .lesson.next-lesson::after { content: 'Далее'; }
         .time { font-weight: bold; color: var(--accent-color); margin-bottom: 5px; font-size: 1.1em; transition: color 0.3s; }
         .subject-info { color: var(--secondary-text); }
         .subject-title { font-weight: 600; color: var(--text-color); font-size: 1.05em; }
@@ -247,6 +281,48 @@
             opacity: 0.85;
         }
 
+        @media (max-width: 599px) {
+            body { padding: 12px; }
+            .header { align-items: stretch; gap: 10px; margin-bottom: 14px; }
+            h1 { width: 100%; font-size: 1.45em; }
+
+            .controls {
+                width: 100%;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 46px;
+                gap: 8px;
+            }
+            #today-btn { grid-column: 1; grid-row: 1; }
+            #settings-toggle { grid-column: 2; grid-row: 1; }
+            #week-toggle { grid-column: 1 / -1; grid-row: 2; }
+            #subgroup-toggle { grid-column: 1 / -1; grid-row: 3; }
+            .controls > .btn { min-height: 42px; }
+
+            .settings-toggle { display: inline-flex; align-items: center; justify-content: center; }
+            .secondary-controls {
+                grid-column: 1 / -1;
+                grid-row: 4;
+                display: none;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 8px;
+                padding: 8px;
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+            }
+            .secondary-controls.open { display: flex; }
+            .secondary-controls .btn { min-width: 44px; min-height: 40px; }
+            .color-picker-dropdown { right: 0; }
+
+            .live-banner { padding: 13px 14px; margin-bottom: 14px; }
+            .tabs { margin-bottom: 14px; }
+            .tab-btn { padding: 9px 12px; }
+            .day-card { padding: 14px; }
+            .day-title { font-size: 1.3em; }
+            .lesson.current-lesson, .lesson.next-lesson { padding-right: 72px; }
+        }
+
         @media (min-width: 600px) {
             .lesson { flex-direction: row; align-items: flex-start; }
             .time { min-width: 130px; margin-bottom: 0; }
@@ -262,31 +338,34 @@
                 <button id="today-btn" class="btn" title="Вернуться к текущему дню и неделе">📅 Сегодня</button>
                 <button id="week-toggle" class="btn" title="Нажмите, чтобы сменить неделю">Загрузка...</button>
                 <button id="subgroup-toggle" class="btn" title="Переключить подгруппу">👥 Подгруппа: Все</button>
-                
-                <div class="color-picker-wrapper">
-                    <button id="color-menu-btn" class="btn" title="Выбрать цвет акцента">🎨</button>
-                    <div id="color-dropdown" class="color-picker-dropdown">
-                        <button class="color-btn blue" data-set-color="blue" title="Синий"></button>
-                        <button class="color-btn red" data-set-color="red" title="Красный"></button>
-                        <button class="color-btn green" data-set-color="green" title="Зеленый"></button>
-                        <button class="color-btn yellow" data-set-color="yellow" title="Желтый"></button>
-                        <button class="color-btn purple" data-set-color="purple" title="Фиолетовый"></button>
-                    </div>
-                </div>
+                <button id="settings-toggle" class="btn settings-toggle" title="Настройки оформления" aria-label="Настройки оформления" aria-expanded="false">⚙️</button>
 
-                <button id="theme-toggle" class="btn">🌙</button>
+                <div id="secondary-controls" class="secondary-controls">
+                    <div class="color-picker-wrapper">
+                        <button id="color-menu-btn" class="btn" title="Выбрать цвет акцента" aria-label="Выбрать цвет акцента">🎨</button>
+                        <div id="color-dropdown" class="color-picker-dropdown">
+                            <button class="color-btn blue" data-set-color="blue" title="Синий" aria-label="Синий цвет"></button>
+                            <button class="color-btn red" data-set-color="red" title="Красный" aria-label="Красный цвет"></button>
+                            <button class="color-btn green" data-set-color="green" title="Зеленый" aria-label="Зелёный цвет"></button>
+                            <button class="color-btn yellow" data-set-color="yellow" title="Желтый" aria-label="Жёлтый цвет"></button>
+                            <button class="color-btn purple" data-set-color="purple" title="Фиолетовый" aria-label="Фиолетовый цвет"></button>
+                        </div>
+                    </div>
+
+                    <button id="theme-toggle" class="btn" title="Сменить тему" aria-label="Сменить светлую или тёмную тему">🌙</button>
+                </div>
             </div>
         </div>
 
         <div id="live-banner" class="live-banner"></div>
 
         <div class="tabs">
-            <button class="tab-btn" data-day="monday" onclick="showDay('monday', this)">Пн</button>
-            <button class="tab-btn" data-day="tuesday" onclick="showDay('tuesday', this)">Вт</button>
-            <button class="tab-btn" data-day="wednesday" onclick="showDay('wednesday', this)">Ср</button>
-            <button class="tab-btn" data-day="thursday" onclick="showDay('thursday', this)">Чт</button>
-            <button class="tab-btn" data-day="friday" onclick="showDay('friday', this)">Пт</button>
-            <button class="tab-btn" data-day="saturday" onclick="showDay('saturday', this)">Сб</button>
+            <button class="tab-btn" data-day="monday" data-label="Пн" onclick="showDay('monday', this)">Пн</button>
+            <button class="tab-btn" data-day="tuesday" data-label="Вт" onclick="showDay('tuesday', this)">Вт</button>
+            <button class="tab-btn" data-day="wednesday" data-label="Ср" onclick="showDay('wednesday', this)">Ср</button>
+            <button class="tab-btn" data-day="thursday" data-label="Чт" onclick="showDay('thursday', this)">Чт</button>
+            <button class="tab-btn" data-day="friday" data-label="Пт" onclick="showDay('friday', this)">Пт</button>
+            <button class="tab-btn" data-day="saturday" data-label="Сб" onclick="showDay('saturday', this)">Сб</button>
         </div>
 
         <!-- ПОНЕДЕЛЬНИК -->
@@ -329,7 +408,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="odd" data-subgroup="2">
+            <div class="lesson" data-week-type="odd" data-subgroup="2" data-end-date="2026-10-31">
                 <div class="time">9:40–11:10</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2 (до 31.10)</span>
@@ -402,7 +481,7 @@
         <div id="wednesday" class="day-card">
             <h2 class="day-title">Среда</h2>
 
-            <div class="lesson" data-week-type="odd" data-subgroup="1">
+            <div class="lesson" data-week-type="odd" data-subgroup="1" data-end-date="2026-10-03">
                 <div class="time">13:50–15:20</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub1">Нечётная • Подгруппа 1 (до 03.10)</span>
@@ -438,7 +517,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="even" data-subgroup="all">
+            <div class="lesson" data-week-type="even" data-subgroup="all" data-end-date="2026-11-07">
                 <div class="time">17:10–18:40</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-common">Чётная • Обе подгруппы (до 07.11)</span>
@@ -447,7 +526,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="even" data-subgroup="2">
+            <div class="lesson" data-week-type="even" data-subgroup="2" data-start-date="2026-11-16">
                 <div class="time">17:10–18:40</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub2">Чётная • Подгруппа 2 (с 16.11)</span>
@@ -583,7 +662,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="even" data-subgroup="1">
+            <div class="lesson" data-week-type="even" data-subgroup="1" data-end-date="2026-11-07">
                 <div class="time">18:50–20:20</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (до 07.11)</span>
@@ -592,7 +671,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="even" data-subgroup="all">
+            <div class="lesson" data-week-type="even" data-subgroup="all" data-start-date="2026-11-16">
                 <div class="time">18:50–20:20</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-common">Чётная • Обе подгруппы (с 16.11)</span>
@@ -615,7 +694,7 @@
         <div id="saturday" class="day-card">
             <h2 class="day-title">Суббота</h2>
 
-            <div class="lesson" data-week-type="even" data-subgroup="1">
+            <div class="lesson" data-week-type="even" data-subgroup="1" data-end-date="2026-10-03">
                 <div class="time">15:30–17:00</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (до 03.10)</span>
@@ -624,7 +703,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="odd" data-subgroup="2">
+            <div class="lesson" data-week-type="odd" data-subgroup="2" data-end-date="2026-10-10">
                 <div class="time">15:30–17:00</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2 (до 10.10)</span>
@@ -633,7 +712,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="even" data-subgroup="1">
+            <div class="lesson" data-week-type="even" data-subgroup="1" data-end-date="2026-10-03">
                 <div class="time">17:10–18:40</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub1">Чётная • Подгруппа 1 (до 03.10)</span>
@@ -642,7 +721,7 @@
                 </div>
             </div>
 
-            <div class="lesson" data-week-type="odd" data-subgroup="2">
+            <div class="lesson" data-week-type="odd" data-subgroup="2" data-end-date="2026-10-10">
                 <div class="time">17:10–18:40</div>
                 <div class="subject-info">
                     <span class="subgroup-badge badge-sub2">Нечётная • Подгруппа 2 (до 10.10)</span>
@@ -675,7 +754,7 @@
             const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
             const mskDate = new Date(utc + (3600000 * 3));
             
-            const startOfSemester = new Date(2026, 8, 1); // 1 сентября 2026
+            const startOfSemester = new Date(2026, 7, 31); // понедельник, 31 августа 2026 — начало 1-й учебной недели
             const diffTime = mskDate.getTime() - startOfSemester.getTime();
             let currentWeekNum = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7)) + 1;
             
@@ -684,14 +763,180 @@
             displayedWeekNum = currentRealWeekNum;
         }
 
+        // Начало первой учебной недели: понедельник 31.08.2026.
+        // По этой дате вычисляется реальная календарная дата любого дня выбранной недели.
+        const semesterWeekStart = new Date(2026, 7, 31, 12, 0, 0);
+
+        const dayOffsetFromMonday = {
+            monday: 0,
+            tuesday: 1,
+            wednesday: 2,
+            thursday: 3,
+            friday: 4,
+            saturday: 5,
+            sunday: 6
+        };
+
+        function parseLocalScheduleDate(value) {
+            if (!value) return null;
+            const [year, month, day] = value.split('-').map(Number);
+            // Полдень используется, чтобы избежать пограничных эффектов часовых поясов/DST.
+            return new Date(year, month - 1, day, 12, 0, 0);
+        }
+
+        function isLessonAllowedOnDate(lesson, lessonDate) {
+            const startDate = parseLocalScheduleDate(lesson.getAttribute('data-start-date'));
+            const endDate = parseLocalScheduleDate(lesson.getAttribute('data-end-date'));
+
+            if (startDate && lessonDate < startDate) return false;
+            if (endDate && lessonDate > endDate) return false;
+            return true;
+        }
+
+        function getLessonDateForDisplayedWeek(lesson) {
+            const dayCard = lesson.closest('.day-card');
+            if (!dayCard) return null;
+
+            const offset = dayOffsetFromMonday[dayCard.id];
+            if (offset === undefined) return null;
+
+            const date = new Date(semesterWeekStart);
+            date.setDate(semesterWeekStart.getDate() + (displayedWeekNum - 1) * 7 + offset);
+            return date;
+        }
+
+        const shortMonthNames = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+        const fullMonthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        const fullDayNames = {
+            monday: 'Понедельник',
+            tuesday: 'Вторник',
+            wednesday: 'Среда',
+            thursday: 'Четверг',
+            friday: 'Пятница',
+            saturday: 'Суббота'
+        };
+
+        function getMskDate() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            return new Date(utc + (3600000 * 3));
+        }
+
+        function getDateForWeekDay(weekNum, dayId) {
+            const offset = dayOffsetFromMonday[dayId];
+            if (offset === undefined) return null;
+            const date = new Date(semesterWeekStart);
+            date.setDate(semesterWeekStart.getDate() + (weekNum - 1) * 7 + offset);
+            return date;
+        }
+
+        function formatTabDate(date) {
+            return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function formatWeekRange(startDate, endDate) {
+            return `${startDate.getDate()} ${shortMonthNames[startDate.getMonth()]}–${endDate.getDate()} ${shortMonthNames[endDate.getMonth()]}`;
+        }
+
+        function formatLongDate(date) {
+            return `${date.getDate()} ${fullMonthNames[date.getMonth()]}`;
+        }
+
+        function updateDateLabels() {
+            const weekStart = getDateForWeekDay(displayedWeekNum, 'monday');
+            const weekEnd = getDateForWeekDay(displayedWeekNum, 'sunday');
+            const weekToggle = document.getElementById('week-toggle');
+            const isEven = (displayedWeekNum % 2 === 0);
+            const weekTypeStr = isEven ? 'Чётная' : 'Нечётная';
+            const isCurrent = (displayedWeekNum === currentRealWeekNum) ? ' • текущая' : '';
+            weekToggle.textContent = `${displayedWeekNum} нед. • ${formatWeekRange(weekStart, weekEnd)} • ${weekTypeStr}${isCurrent}`;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const dayId = btn.dataset.day;
+                const dayDate = getDateForWeekDay(displayedWeekNum, dayId);
+                btn.textContent = `${btn.dataset.label} ${formatTabDate(dayDate)}`;
+            });
+
+            document.querySelectorAll('.day-card').forEach(card => {
+                const title = card.querySelector('.day-title');
+                const dayDate = getDateForWeekDay(displayedWeekNum, card.id);
+                if (title && dayDate && fullDayNames[card.id]) {
+                    title.textContent = `${fullDayNames[card.id]} • ${formatLongDate(dayDate)}`;
+                }
+            });
+        }
+
+        function getLessonTimeRange(lesson) {
+            const timeEl = lesson.querySelector('.time');
+            if (!timeEl) return null;
+            const timeMatch = timeEl.innerText.match(/(\d{1,2})[.:](\d{2})\s*[-–]\s*(\d{1,2})[.:](\d{2})/);
+            if (!timeMatch) return null;
+            return {
+                start: parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]),
+                end: parseInt(timeMatch[3]) * 60 + parseInt(timeMatch[4])
+            };
+        }
+
+        function updateLessonVisualStates(mskDate = getMskDate()) {
+            document.querySelectorAll('.lesson').forEach(lesson => {
+                lesson.classList.remove('past-lesson', 'current-lesson', 'next-lesson');
+            });
+
+            if (displayedWeekNum !== currentRealWeekNum) return;
+
+            const todayOffset = (mskDate.getDay() + 6) % 7; // Пн = 0 ... Вс = 6
+            const currentMins = mskDate.getHours() * 60 + mskDate.getMinutes();
+            const currentWeekMinute = todayOffset * 1440 + currentMins;
+            let nextStartKey = Infinity;
+            const nextLessons = [];
+
+            document.querySelectorAll('.lesson:not(.hidden-lesson)').forEach(lesson => {
+                const dayCard = lesson.closest('.day-card');
+                if (!dayCard) return;
+                const dayOffset = dayOffsetFromMonday[dayCard.id];
+                const range = getLessonTimeRange(lesson);
+                if (dayOffset === undefined || !range) return;
+
+                const startKey = dayOffset * 1440 + range.start;
+                const endKey = dayOffset * 1440 + range.end;
+
+                if (endKey < currentWeekMinute) {
+                    lesson.classList.add('past-lesson');
+                    return;
+                }
+
+                if (startKey <= currentWeekMinute && endKey >= currentWeekMinute) {
+                    lesson.classList.add('current-lesson');
+                    return;
+                }
+
+                if (startKey > currentWeekMinute) {
+                    if (startKey < nextStartKey) {
+                        nextStartKey = startKey;
+                        nextLessons.length = 0;
+                        nextLessons.push(lesson);
+                    } else if (startKey === nextStartKey) {
+                        nextLessons.push(lesson);
+                    }
+                }
+            });
+
+            nextLessons.forEach(lesson => lesson.classList.add('next-lesson'));
+        }
+
+        function formatDuration(minutes) {
+            if (minutes < 60) return `${minutes} мин`;
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return mins ? `${hours} ч ${mins} мин` : `${hours} ч`;
+        }
+
         function updateScheduleUI() {
             const weekToggle = document.getElementById('week-toggle');
             const subgroupToggle = document.getElementById('subgroup-toggle');
 
             const isEven = (displayedWeekNum % 2 === 0);
-            const weekTypeStr = isEven ? 'Чётная' : 'Нечётная';
-            const isCurrent = (displayedWeekNum === currentRealWeekNum) ? ' (Текущая)' : '';
-            weekToggle.textContent = `${displayedWeekNum} нед. (${weekTypeStr})${isCurrent}`;
+            updateDateLabels();
 
             if (currentSubgroupFilter === 'all') {
                 subgroupToggle.textContent = '👥 Подгруппа: Все';
@@ -716,12 +961,21 @@
                     }
                 }
 
+                // Фильтр по календарным ограничениям занятия: «до ...» / «с ...».
+                // Проверяется дата конкретного дня именно выбранной недели.
+                const lessonDate = getLessonDateForDisplayedWeek(lesson);
+                if (lessonDate && !isLessonAllowedOnDate(lesson, lessonDate)) {
+                    hide = true;
+                }
+
                 if (hide) {
                     lesson.classList.add('hidden-lesson');
                 } else {
                     lesson.classList.remove('hidden-lesson');
                 }
             });
+
+            updateLessonVisualStates();
         }
 
         document.getElementById('week-toggle').addEventListener('click', () => {
@@ -762,7 +1016,24 @@
 
             document.getElementById(dayId).style.display = 'block';
             if (btnElement) btnElement.classList.add('active');
+            updateLessonVisualStates();
         }
+
+        const settingsToggle = document.getElementById('settings-toggle');
+        const secondaryControls = document.getElementById('secondary-controls');
+
+        settingsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = secondaryControls.classList.toggle('open');
+            settingsToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 599 && !secondaryControls.contains(e.target) && e.target !== settingsToggle) {
+                secondaryControls.classList.remove('open');
+                settingsToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
 
         /* Темы */
         const themeToggle = document.getElementById('theme-toggle');
@@ -817,22 +1088,21 @@
         });
         setAccentColor(savedColor);
 
-        /* Живой статус пары с учетом разделения подгрупп */
+        /* Живой статус: текущая и следующая пара с учетом подгрупп и календарных ограничений */
         function updateLiveStatus() {
-            const now = new Date();
-            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            const mskDate = new Date(utc + (3600000 * 3));
-            
+            const mskDate = getMskDate();
             const dayIdx = mskDate.getDay();
             const hours = mskDate.getHours();
             const minutes = mskDate.getMinutes();
             const currentMins = hours * 60 + minutes;
             const timeStr = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
-            
+
             const daysMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
             const currentDayId = daysMap[dayIdx];
             const banner = document.getElementById('live-banner');
-            
+
+            updateLessonVisualStates(mskDate);
+
             if (currentDayId === 'sunday') {
                 banner.innerHTML = `<strong>🕒 ${timeStr} (МСК):</strong> Воскресенье, пар нет. Отдыхаем! 🎉`;
                 return;
@@ -842,63 +1112,97 @@
             if (!dayCard) return;
 
             const isEvenReal = (currentRealWeekNum % 2 === 0);
-            const lessons = dayCard.querySelectorAll('.lesson');
-            
-            let activeForSub1 = [];
-            let activeForSub2 = [];
-            let timeLeftMin = null;
+            const todayMsk = new Date(mskDate.getFullYear(), mskDate.getMonth(), mskDate.getDate(), 12, 0, 0);
+            const events = [];
 
-            lessons.forEach(lesson => {
+            dayCard.querySelectorAll('.lesson').forEach(lesson => {
                 const wType = lesson.getAttribute('data-week-type');
                 if (wType === 'even' && !isEvenReal) return;
                 if (wType === 'odd' && isEvenReal) return;
+                if (!isLessonAllowedOnDate(lesson, todayMsk)) return;
 
-                const timeText = lesson.querySelector('.time').innerText;
-                const timeMatch = timeText.match(/(\d{1,2})[.:](\d{2})\s*[-–]\s*(\d{1,2})[.:](\d{2})/);
-                
-                if (timeMatch) {
-                    const startMins = parseInt(timeMatch[1]) * 60 + parseInt(timeMatch[2]);
-                    const endMins = parseInt(timeMatch[3]) * 60 + parseInt(timeMatch[4]);
-                    
-                    if (currentMins >= startMins && currentMins <= endMins) {
-                        timeLeftMin = endMins - currentMins;
-                        const sGroup = lesson.getAttribute('data-subgroup');
-                        const contentHTML = lesson.querySelector('.subject-info').innerHTML;
+                const range = getLessonTimeRange(lesson);
+                if (!range) return;
 
-                        if (sGroup === 'all') {
-                            activeForSub1.push(contentHTML);
-                            activeForSub2.push(contentHTML);
-                        } else if (sGroup === '1') {
-                            activeForSub1.push(contentHTML);
-                        } else if (sGroup === '2') {
-                            activeForSub2.push(contentHTML);
-                        }
-                    }
-                }
+                events.push({
+                    lesson,
+                    start: range.start,
+                    end: range.end,
+                    subgroup: lesson.getAttribute('data-subgroup'),
+                    contentHTML: lesson.querySelector('.subject-info').innerHTML
+                });
             });
 
+            events.sort((a, b) => a.start - b.start || a.end - b.end);
+
+            const activeForSub1 = events.filter(e => e.start <= currentMins && e.end >= currentMins && (e.subgroup === 'all' || e.subgroup === '1'));
+            const activeForSub2 = events.filter(e => e.start <= currentMins && e.end >= currentMins && (e.subgroup === 'all' || e.subgroup === '2'));
+            const nextForSub1 = events.find(e => e.start > currentMins && (e.subgroup === 'all' || e.subgroup === '1')) || null;
+            const nextForSub2 = events.find(e => e.start > currentMins && (e.subgroup === 'all' || e.subgroup === '2')) || null;
+
+            const renderEvent = (event) => event ? event.contentHTML : '';
+            const sameEvent = (a, b) => a && b && a.start === b.start && a.end === b.end && a.contentHTML === b.contentHTML;
+            const formatStart = (event) => {
+                const h = Math.floor(event.start / 60);
+                const m = event.start % 60;
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+            };
+
+            function renderNextBlock(next1, next2, compact = false) {
+                if (!next1 && !next2) {
+                    return compact
+                        ? `<div style="margin-top: 10px; opacity: .9;"><strong>Далее:</strong> на сегодня пары закончились.</div>`
+                        : `<strong>🕒 ${timeStr} (МСК):</strong> На сегодня пары закончились. 🎉`;
+                }
+
+                if (sameEvent(next1, next2) || (next1 && !next2) || (!next1 && next2)) {
+                    const event = next1 || next2;
+                    const wait = event.start - currentMins;
+                    const prefix = compact ? 'Далее' : `🕒 ${timeStr} (МСК) — Следующая пара`;
+                    return `<div${compact ? ' style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.25);"' : ''}><strong>${prefix}: ${formatStart(event)} • через ${formatDuration(wait)}</strong><div class="subject-info" style="margin-top: 4px;">${renderEvent(event)}</div></div>`;
+                }
+
+                let html = `<div${compact ? ' style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.25);"' : ''}>`;
+                html += `<strong>${compact ? 'Далее' : `🕒 ${timeStr} (МСК) — Следующие пары`}:</strong>`;
+                html += `<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">`;
+                if (next1) {
+                    html += `<div><strong style="color:#fff;">Подгруппа 1 • ${formatStart(next1)} • через ${formatDuration(next1.start - currentMins)}</strong><div class="subject-info">${renderEvent(next1)}</div></div>`;
+                } else {
+                    html += `<div><strong style="color:#fff;">Подгруппа 1:</strong> на сегодня пары закончились.</div>`;
+                }
+                if (next2) {
+                    html += `<div><strong style="color:#fff;">Подгруппа 2 • ${formatStart(next2)} • через ${formatDuration(next2.start - currentMins)}</strong><div class="subject-info">${renderEvent(next2)}</div></div>`;
+                } else {
+                    html += `<div><strong style="color:#fff;">Подгруппа 2:</strong> на сегодня пары закончились.</div>`;
+                }
+                html += `</div></div>`;
+                return html;
+            }
+
             if (activeForSub1.length > 0 || activeForSub2.length > 0) {
-                let htmlOutput = `<div style="margin-bottom: 6px;"><strong>🕒 ${timeStr} (МСК) — Идёт пара (осталось ${timeLeftMin} мин.):</strong></div>`;
-                
-                const isIdentical = JSON.stringify(activeForSub1) === JSON.stringify(activeForSub2);
+                const firstActive = activeForSub1[0] || activeForSub2[0];
+                const timeLeftMin = Math.max(0, firstActive.end - currentMins);
+                let htmlOutput = `<div style="margin-bottom: 6px;"><strong>🕒 ${timeStr} (МСК) — Идёт пара (осталось ${formatDuration(timeLeftMin)}):</strong></div>`;
+
+                const content1 = activeForSub1.map(e => e.contentHTML);
+                const content2 = activeForSub2.map(e => e.contentHTML);
+                const isIdentical = JSON.stringify(content1) === JSON.stringify(content2);
 
                 if (isIdentical || activeForSub2.length === 0) {
-                    htmlOutput += `<div class="subject-info">${activeForSub1[0]}</div>`;
+                    htmlOutput += `<div class="subject-info">${content1[0]}</div>`;
                 } else if (activeForSub1.length === 0) {
-                    htmlOutput += `<div class="subject-info">${activeForSub2[0]}</div>`;
+                    htmlOutput += `<div class="subject-info">${content2[0]}</div>`;
                 } else {
                     htmlOutput += `<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">`;
-                    if (activeForSub1.length > 0) {
-                        htmlOutput += `<div><span style="font-weight: bold; color: #fff; text-decoration: underline;">Подгруппа 1:</span><div class="subject-info" style="margin-top: 2px;">${activeForSub1.join('<br>')}</div></div>`;
-                    }
-                    if (activeForSub2.length > 0) {
-                        htmlOutput += `<div><span style="font-weight: bold; color: #fff; text-decoration: underline;">Подгруппа 2:</span><div class="subject-info" style="margin-top: 2px;">${activeForSub2.join('<br>')}</div></div>`;
-                    }
+                    htmlOutput += `<div><span style="font-weight: bold; color: #fff; text-decoration: underline;">Подгруппа 1:</span><div class="subject-info" style="margin-top: 2px;">${content1.join('<br>')}</div></div>`;
+                    htmlOutput += `<div><span style="font-weight: bold; color: #fff; text-decoration: underline;">Подгруппа 2:</span><div class="subject-info" style="margin-top: 2px;">${content2.join('<br>')}</div></div>`;
                     htmlOutput += `</div>`;
                 }
+
+                htmlOutput += renderNextBlock(nextForSub1, nextForSub2, true);
                 banner.innerHTML = htmlOutput;
             } else {
-                banner.innerHTML = `<strong>🕒 ${timeStr} (МСК):</strong> Сейчас пар нет или идет перемена.`;
+                banner.innerHTML = renderNextBlock(nextForSub1, nextForSub2, false);
             }
         }
 
