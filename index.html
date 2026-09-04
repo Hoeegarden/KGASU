@@ -433,8 +433,10 @@
             .controls { width: 0; height: 0; overflow: visible; margin: 0; }
             .secondary-controls {
                 position: fixed;
+                top: auto !important;
+                left: auto !important;
                 right: 12px;
-                bottom: 76px;
+                bottom: calc(82px + env(safe-area-inset-bottom));
                 z-index: 250;
                 display: none;
                 align-items: center;
@@ -445,6 +447,7 @@
                 border-radius: 16px;
                 box-shadow: var(--shadow-focus);
                 backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
             }
             .secondary-controls.open { display: flex; animation: popControls .2s ease both; }
             @keyframes popControls { from { opacity: 0; transform: translateY(7px) scale(.97); } to { opacity: 1; transform: none; } }
@@ -1316,8 +1319,32 @@
         const settingsToggle = document.getElementById('settings-toggle');
         const secondaryControls = document.getElementById('secondary-controls');
 
+        // На мобильных переносим панель настроек прямо в body.
+        // Так position: fixed всегда считается от окна браузера, а не от шапки.
+        const secondaryControlsAnchor = document.createComment('secondary-controls-home');
+        secondaryControls.parentNode.insertBefore(secondaryControlsAnchor, secondaryControls);
+
+        function placeSettingsPanelForViewport() {
+            const isMobile = window.matchMedia('(max-width: 599px)').matches;
+
+            if (isMobile) {
+                if (secondaryControls.parentNode !== document.body) {
+                    document.body.appendChild(secondaryControls);
+                }
+            } else if (secondaryControls.parentNode === document.body) {
+                secondaryControlsAnchor.parentNode.insertBefore(secondaryControls, secondaryControlsAnchor.nextSibling);
+                secondaryControls.classList.remove('open');
+                settingsToggle.setAttribute('aria-expanded', 'false');
+                mobileSettingsBtn?.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        placeSettingsPanelForViewport();
+        window.addEventListener('resize', placeSettingsPanelForViewport);
+
         function toggleSettingsPanel(e) {
             if (e) e.stopPropagation();
+            placeSettingsPanelForViewport();
             const isOpen = secondaryControls.classList.toggle('open');
             settingsToggle.setAttribute('aria-expanded', String(isOpen));
             mobileSettingsBtn?.setAttribute('aria-expanded', String(isOpen));
