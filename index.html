@@ -514,6 +514,221 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
         }
+    
+
+        /* Дополнительная полировка интерфейса */
+        .tabs {
+            scroll-snap-type: x proximity;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { scroll-snap-align: center; }
+        .tab-btn.is-today:not(.active) {
+            background: color-mix(in srgb, var(--accent-color) 5%, var(--tab-bg));
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-color) 18%, transparent);
+        }
+        .lesson.current-lesson {
+            background: color-mix(in srgb, var(--accent-color) 8%, var(--card-bg));
+            box-shadow: inset 4px 0 0 var(--accent-color), 0 11px 28px color-mix(in srgb, var(--accent-color) 12%, transparent);
+        }
+        .lesson.next-lesson {
+            background: color-mix(in srgb, var(--accent-color) 3.5%, var(--card-bg));
+            box-shadow: inset 2px 0 0 color-mix(in srgb, var(--accent-color) 58%, transparent), 0 5px 14px rgba(31,35,40,.05);
+        }
+        .lesson.next-lesson::after {
+            background: color-mix(in srgb, var(--accent-color) 82%, var(--card-bg));
+            opacity: .82;
+            box-shadow: none;
+        }
+        .lesson.current-lesson::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            border-radius: 0 0 13px 13px;
+            background: linear-gradient(90deg,
+                var(--accent-color) 0%,
+                var(--accent-color) var(--lesson-progress, 0%),
+                color-mix(in srgb, var(--accent-color) 14%, transparent) var(--lesson-progress, 0%),
+                color-mix(in srgb, var(--accent-color) 14%, transparent) 100%);
+            pointer-events: none;
+        }
+        .live-banner { position: relative; isolation: isolate; }
+        .live-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 100% 0%, rgba(255,255,255,.12), transparent 38%);
+            pointer-events: none;
+        }
+        .live-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 6px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.14);
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 800;
+            letter-spacing: .02em;
+        }
+        .live-title {
+            display: block;
+            color: #fff;
+            font-size: 1.02rem;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+        .live-secondary {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,.22);
+        }
+        .next-study-card {
+            margin-top: 11px;
+            padding: 10px 11px;
+            border: 1px solid rgba(255,255,255,.18);
+            border-radius: 12px;
+            background: rgba(255,255,255,.08);
+        }
+        .next-study-label {
+            display: inline-block;
+            margin-bottom: 4px;
+            font-size: .72rem;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .035em;
+            color: rgba(255,255,255,.78);
+        }
+        .next-study-title { color: #fff; font-weight: 750; }
+        .next-study-meta { color: rgba(255,255,255,.82); margin-top: 2px; }
+        .day-card.just-opened .day-title { animation: dayTitleFlash .65s ease; }
+        @keyframes dayTitleFlash {
+            0% { color: var(--accent-color); transform: translateX(4px); }
+            100% { color: var(--text-color); transform: translateX(0); }
+        }
+        body.dark-theme {
+            --secondary-text: #b2bdc8;
+            --border-color: #2b333d;
+            --lesson-border: #252d36;
+        }
+
+        /* Change-log: последние изменения страницы на GitHub */
+        .changelog-btn {
+            width: 38px;
+            min-width: 38px;
+            padding: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .changelog-btn-label { display: none; }
+        .changelog-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 600;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background: rgba(0, 0, 0, .28);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .changelog-overlay.open { display: flex; animation: changelogFade .18s ease both; }
+        @keyframes changelogFade { from { opacity: 0; } to { opacity: 1; } }
+        .changelog-card {
+            width: min(100%, 460px);
+            max-height: min(80vh, 620px);
+            overflow: auto;
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            box-shadow: 0 24px 70px rgba(0,0,0,.22);
+            padding: 18px;
+            animation: changelogPop .2s cubic-bezier(.2,.8,.2,1) both;
+        }
+        @keyframes changelogPop { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
+        .changelog-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+        .changelog-title { margin: 0; font-size: 1.08rem; color: var(--text-color); }
+        .changelog-close {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--btn-border);
+            border-radius: 999px;
+            background: var(--btn-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .changelog-status { display: grid; gap: 10px; }
+        .changelog-empty {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 13px;
+            background: color-mix(in srgb, var(--accent-color) 3%, var(--soft-bg));
+            color: var(--secondary-text);
+            font-weight: 650;
+        }
+        .changelog-entry {
+            position: relative;
+            padding: 12px 13px 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            background: color-mix(in srgb, var(--accent-color) 2.5%, var(--soft-bg));
+        }
+        .changelog-entry:first-child {
+            border-color: color-mix(in srgb, var(--accent-color) 30%, var(--border-color));
+            background: color-mix(in srgb, var(--accent-color) 6%, var(--soft-bg));
+            box-shadow: inset 3px 0 0 var(--accent-color);
+        }
+        .changelog-entry-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+        .changelog-date { color: var(--secondary-text); font-size: .76rem; font-weight: 750; }
+        .changelog-latest {
+            flex: 0 0 auto;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--accent-color) 11%, var(--card-bg));
+            color: var(--accent-color);
+            font-size: .66rem;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        .changelog-message { color: var(--text-color); font-weight: 720; line-height: 1.42; overflow-wrap: anywhere; }
+        .changelog-note { margin-top: 11px; color: var(--secondary-text); font-size: .8rem; }
+
+        @media (max-width: 599px) {
+            body { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
+            .mobile-nav {
+                width: min(calc(100% - 12px), 560px);
+                grid-template-columns: repeat(5, 1fr);
+                gap: 2px;
+                padding: 6px;
+                border-radius: 18px;
+                -webkit-backdrop-filter: blur(14px);
+            }
+            .mobile-nav-btn { padding: 5px 1px 4px; border-radius: 12px; font-size: .62rem; gap: 3px; }
+            .mobile-nav-btn .nav-icon { font-size: 1.05rem; }
+            #mobile-next-day-btn span:last-child { font-size: 0; }
+            #mobile-next-day-btn span:last-child::after { content: 'След. день'; font-size: .62rem; }
+            .tabs { scroll-padding-inline: 12px; }
+            .live-title { font-size: .96rem; }
+            .next-study-card { padding: 9px 10px; }
+            .secondary-controls .changelog-btn { width: 42px; min-width: 42px; padding: 8px 10px; }
+            .secondary-controls .changelog-btn-label { display: none; }
+            .changelog-overlay { align-items: flex-end; padding: 10px 10px calc(78px + env(safe-area-inset-bottom)); }
+            .changelog-card { width: 100%; border-radius: 18px; max-height: 72vh; }
+        }
+
     </style>
 </head>
 <body>
@@ -543,6 +758,7 @@
                     </div>
 
                     <button id="theme-toggle" class="btn" title="Сменить тему" aria-label="Сменить светлую или тёмную тему">🌙</button>
+                    <button id="changelog-btn" class="btn changelog-btn" type="button" title="Журнал обновлений" aria-label="Журнал обновлений">📝<span class="changelog-btn-label">Change-log</span></button>
                 </div>
             </div>
         </div>
@@ -935,10 +1151,26 @@
         <button id="mobile-subgroup-btn" class="mobile-nav-btn" type="button" aria-label="Переключить подгруппу">
             <span class="nav-icon">👥</span><span id="mobile-subgroup-label">Все</span>
         </button>
+        <button id="mobile-next-day-btn" class="mobile-nav-btn" type="button" aria-label="Перейти к следующему учебному дню">
+            <span class="nav-icon">⏭️</span><span>Следующий</span>
+        </button>
         <button id="mobile-settings-btn" class="mobile-nav-btn" type="button" aria-label="Открыть настройки оформления" aria-expanded="false">
             <span class="nav-icon">⚙️</span><span>Настройки</span>
         </button>
     </nav>
+
+    <div id="changelog-overlay" class="changelog-overlay" aria-hidden="true">
+        <section class="changelog-card" role="dialog" aria-modal="true" aria-labelledby="changelog-title">
+            <div class="changelog-head">
+                <h2 id="changelog-title" class="changelog-title">📝 Журнал обновлений</h2>
+                <button id="changelog-close" class="changelog-close" type="button" aria-label="Закрыть журнал">✕</button>
+            </div>
+            <div id="changelog-list" class="changelog-status">
+                <div class="changelog-empty">Журнал загрузится при открытии.</div>
+            </div>
+            <div id="changelog-note" class="changelog-note">Показываются последние 5 изменений страницы.</div>
+        </section>
+    </div>
 
     <script>
         let currentRealWeekNum = 1;
@@ -1162,6 +1394,7 @@
         function updateLessonVisualStates(mskDate = getMskDate()) {
             document.querySelectorAll('.lesson').forEach(lesson => {
                 lesson.classList.remove('past-lesson', 'current-lesson', 'next-lesson');
+                lesson.style.removeProperty('--lesson-progress');
             });
 
             if (displayedWeekNum !== currentRealWeekNum) return;
@@ -1189,6 +1422,9 @@
 
                 if (startKey <= currentWeekMinute && endKey >= currentWeekMinute) {
                     lesson.classList.add('current-lesson');
+                    const duration = Math.max(1, endKey - startKey);
+                    const progress = Math.max(0, Math.min(100, ((currentWeekMinute - startKey) / duration) * 100));
+                    lesson.style.setProperty('--lesson-progress', `${progress}%`);
                     return;
                 }
 
@@ -1310,11 +1546,13 @@
         const mobileTodayBtn = document.getElementById('mobile-today-btn');
         const mobileWeekBtn = document.getElementById('mobile-week-btn');
         const mobileSubgroupBtn = document.getElementById('mobile-subgroup-btn');
+        const mobileNextDayBtn = document.getElementById('mobile-next-day-btn');
         const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
 
         mobileTodayBtn?.addEventListener('click', () => document.getElementById('today-btn').click());
         mobileWeekBtn?.addEventListener('click', () => document.getElementById('week-toggle').click());
         mobileSubgroupBtn?.addEventListener('click', () => document.getElementById('subgroup-toggle').click());
+        mobileNextDayBtn?.addEventListener('click', goToNextStudyDay);
 
         const settingsToggle = document.getElementById('settings-toggle');
         const secondaryControls = document.getElementById('secondary-controls');
@@ -1360,6 +1598,275 @@
                 mobileSettingsBtn?.setAttribute('aria-expanded', 'false');
             }
         });
+
+        /* Свайпы между днями и учебными неделями на мобильных устройствах. */
+        (function setupMobileDaySwipes() {
+            const swipeArea = document.querySelector('.container');
+            const dayOrder = ['monday','tuesday','wednesday','thursday','friday','saturday'];
+            if (!swipeArea) return;
+            let startX = 0;
+            let startY = 0;
+            let tracking = false;
+            let ignoreGesture = false;
+
+            swipeArea.addEventListener('touchstart', (e) => {
+                if (window.innerWidth > 599 || e.touches.length !== 1) return;
+                ignoreGesture = !!e.target.closest('button, a, .tabs, .secondary-controls, .changelog-overlay');
+                if (ignoreGesture) return;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                tracking = true;
+            }, { passive: true });
+
+            swipeArea.addEventListener('touchend', (e) => {
+                if (!tracking || ignoreGesture || window.innerWidth > 599 || !e.changedTouches.length) {
+                    tracking = false;
+                    return;
+                }
+                tracking = false;
+                const dx = e.changedTouches[0].clientX - startX;
+                const dy = e.changedTouches[0].clientY - startY;
+                if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+
+                const visibleCard = Array.from(document.querySelectorAll('.day-card')).find(card => getComputedStyle(card).display !== 'none');
+                if (!visibleCard) return;
+                const currentIndex = dayOrder.indexOf(visibleCard.id);
+                if (currentIndex < 0) return;
+
+                if (dx < 0) {
+                    if (currentIndex < dayOrder.length - 1) {
+                        openDayForWeek(dayOrder[currentIndex + 1], displayedWeekNum, false);
+                    } else if (displayedWeekNum < 18) {
+                        openDayForWeek('monday', displayedWeekNum + 1, true);
+                    }
+                } else {
+                    if (currentIndex > 0) {
+                        openDayForWeek(dayOrder[currentIndex - 1], displayedWeekNum, false);
+                    } else if (displayedWeekNum > 1) {
+                        openDayForWeek('saturday', displayedWeekNum - 1, true);
+                    }
+                }
+            }, { passive: true });
+        })();
+
+        /* Change-log из GitHub. На обычном GitHub Pages репозиторий определяется автоматически. */
+        const GITHUB_REPO_OVERRIDE = '';
+        const GITHUB_CHANGELOG_LIMIT = 5;
+        const changelogBtn = document.getElementById('changelog-btn');
+        const changelogOverlay = document.getElementById('changelog-overlay');
+        const changelogClose = document.getElementById('changelog-close');
+        const changelogList = document.getElementById('changelog-list');
+        const changelogNote = document.getElementById('changelog-note');
+        let changelogSessionEntries = null;
+        let changelogSessionPath = '';
+        let changelogSessionError = '';
+        let changelogLoadPromise = null;
+
+        function getGitHubPageInfo() {
+            if (GITHUB_REPO_OVERRIDE.trim()) {
+                const parts = GITHUB_REPO_OVERRIDE.trim().replace(/^https?:\/\/github\.com\//i, '').replace(/\/$/, '').split('/');
+                if (parts.length >= 2) return { owner: parts[0], repo: parts[1], path: 'index.html' };
+            }
+            const host = location.hostname.toLowerCase();
+            if (!host.endsWith('.github.io')) return null;
+            const owner = host.slice(0, -'.github.io'.length);
+            const segments = location.pathname.split('/').filter(Boolean);
+            let repo;
+            let filePath = 'index.html';
+            if (segments.length === 0) {
+                repo = `${owner}.github.io`;
+            } else {
+                repo = segments[0];
+                const rest = segments.slice(1);
+                if (rest.length && /\.html?$/i.test(rest[rest.length - 1])) filePath = rest.join('/');
+            }
+            return { owner, repo, path: filePath };
+        }
+
+        function formatCommitDate(isoDate) {
+            const date = new Date(isoDate);
+            if (Number.isNaN(date.getTime())) return 'Дата неизвестна';
+            return date.toLocaleString('ru-RU', {
+                day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function renderChangelogEntries(entries, path) {
+            changelogList.replaceChildren();
+            entries.forEach((entry, index) => {
+                const item = document.createElement('article');
+                item.className = 'changelog-entry';
+                const head = document.createElement('div');
+                head.className = 'changelog-entry-head';
+                const date = document.createElement('time');
+                date.className = 'changelog-date';
+                date.dateTime = entry.date || '';
+                date.textContent = formatCommitDate(entry.date);
+                head.appendChild(date);
+                if (index === 0) {
+                    const latest = document.createElement('span');
+                    latest.className = 'changelog-latest';
+                    latest.textContent = 'Последнее';
+                    head.appendChild(latest);
+                }
+                const message = document.createElement('div');
+                message.className = 'changelog-message';
+                message.textContent = entry.message || 'Описание обновления не указано.';
+                item.append(head, message);
+                changelogList.appendChild(item);
+            });
+            changelogNote.textContent = path
+                ? `Источник: последние ${entries.length} коммитов, изменивших ${path}.`
+                : `Источник: последние ${entries.length} коммитов страницы на GitHub.`;
+        }
+
+        function showChangelogMessage(text) {
+            changelogList.replaceChildren();
+            const block = document.createElement('div');
+            block.className = 'changelog-empty';
+            block.textContent = text;
+            changelogList.appendChild(block);
+        }
+
+        async function loadChangelog() {
+            if (changelogSessionEntries) {
+                renderChangelogEntries(changelogSessionEntries, changelogSessionPath);
+                return;
+            }
+            if (changelogLoadPromise) {
+                await changelogLoadPromise;
+                if (changelogSessionEntries) renderChangelogEntries(changelogSessionEntries, changelogSessionPath);
+                else if (changelogSessionError) showChangelogMessage(changelogSessionError);
+                return;
+            }
+            const repoInfo = getGitHubPageInfo();
+            if (!repoInfo) {
+                changelogSessionError = 'Репозиторий не определён. Для собственного домена укажи owner/repository в GITHUB_REPO_OVERRIDE внутри HTML.';
+                showChangelogMessage(changelogSessionError);
+                changelogNote.textContent = 'На адресах *.github.io репозиторий определяется автоматически.';
+                return;
+            }
+            showChangelogMessage('Проверяем последние обновления на GitHub…');
+            changelogNote.textContent = `Загружаем последние ${GITHUB_CHANGELOG_LIMIT} коммитов…`;
+            changelogLoadPromise = (async () => {
+                try {
+                    const apiUrl = `https://api.github.com/repos/${encodeURIComponent(repoInfo.owner)}/${encodeURIComponent(repoInfo.repo)}/commits?path=${encodeURIComponent(repoInfo.path)}&per_page=${GITHUB_CHANGELOG_LIMIT}`;
+                    const response = await fetch(apiUrl, { headers: { 'Accept': 'application/vnd.github+json' }, cache: 'no-store' });
+                    if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
+                    const commits = await response.json();
+                    if (!Array.isArray(commits) || !commits.length) throw new Error('Коммиты не найдены');
+                    changelogSessionEntries = commits.slice(0, GITHUB_CHANGELOG_LIMIT).map(commit => {
+                        const fullMessage = commit?.commit?.message || '';
+                        return {
+                            date: commit?.commit?.committer?.date || commit?.commit?.author?.date || '',
+                            message: fullMessage.split('\n')[0].trim() || 'Описание обновления не указано.'
+                        };
+                    });
+                    changelogSessionPath = repoInfo.path;
+                    changelogSessionError = '';
+                } catch (error) {
+                    changelogSessionError = 'Не удалось загрузить журнал обновлений. GitHub API сейчас недоступен, но само расписание продолжает работать.';
+                    console.warn('Change-log:', error);
+                }
+            })();
+            await changelogLoadPromise;
+            if (changelogSessionEntries) renderChangelogEntries(changelogSessionEntries, changelogSessionPath);
+            else {
+                showChangelogMessage(changelogSessionError);
+                changelogNote.textContent = 'Обнови страницу, чтобы попробовать запросить GitHub снова.';
+            }
+        }
+
+        function openChangelog() {
+            changelogOverlay.classList.add('open');
+            changelogOverlay.setAttribute('aria-hidden', 'false');
+            loadChangelog();
+        }
+        function closeChangelog() {
+            changelogOverlay.classList.remove('open');
+            changelogOverlay.setAttribute('aria-hidden', 'true');
+        }
+        changelogBtn?.addEventListener('click', (e) => { e.stopPropagation(); openChangelog(); });
+        changelogClose?.addEventListener('click', closeChangelog);
+        changelogOverlay?.addEventListener('click', (e) => { if (e.target === changelogOverlay) closeChangelog(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && changelogOverlay.classList.contains('open')) closeChangelog(); });
+
+        function getDayIdFromDate(date) {
+            return ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][date.getDay()];
+        }
+        function getWeekNumForDate(date) {
+            const noon = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0);
+            return Math.floor((noon.getTime() - semesterWeekStart.getTime()) / (1000 * 60 * 60 * 24 * 7)) + 1;
+        }
+        function isLessonApplicableForContext(lesson, weekNum, subgroupFilter = 'all') {
+            if (weekNum < 1 || weekNum > 18) return false;
+            const isEven = weekNum % 2 === 0;
+            const wType = lesson.getAttribute('data-week-type');
+            const sGroup = lesson.getAttribute('data-subgroup');
+            if (wType === 'even' && !isEven) return false;
+            if (wType === 'odd' && isEven) return false;
+            if (subgroupFilter !== 'all' && sGroup !== 'all' && sGroup !== subgroupFilter) return false;
+            const dayCard = lesson.closest('.day-card');
+            if (!dayCard) return false;
+            const lessonDate = getDateForWeekDay(weekNum, dayCard.id);
+            if (lessonDate && !isLessonAllowedOnDate(lesson, lessonDate)) return false;
+            return !!getLessonTimeRange(lesson);
+        }
+        function getLessonsForDayAndWeek(dayId, weekNum, subgroupFilter = currentSubgroupFilter) {
+            if (dayId === 'sunday' || weekNum < 1 || weekNum > 18) return [];
+            const card = document.getElementById(dayId);
+            if (!card) return [];
+            return Array.from(card.querySelectorAll('.lesson'))
+                .filter(lesson => isLessonApplicableForContext(lesson, weekNum, subgroupFilter))
+                .sort((a, b) => getLessonTimeRange(a).start - getLessonTimeRange(b).start);
+        }
+        function findNextStudyDay(fromDate = getMskDate(), afterCurrentDay = true, subgroupFilter = currentSubgroupFilter) {
+            const base = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 12, 0, 0);
+            for (let i = afterCurrentDay ? 1 : 0; i <= 21; i++) {
+                const date = new Date(base);
+                date.setDate(base.getDate() + i);
+                const weekNum = getWeekNumForDate(date);
+                if (weekNum > 18) return null;
+                if (weekNum < 1) continue;
+                const dayId = getDayIdFromDate(date);
+                const lessons = getLessonsForDayAndWeek(dayId, weekNum, subgroupFilter);
+                if (lessons.length) return { date, weekNum, dayId, lesson: lessons[0] };
+            }
+            return null;
+        }
+        function formatNextStudyDay(nextInfo) {
+            if (!nextInfo) return '';
+            const range = getLessonTimeRange(nextInfo.lesson);
+            const title = nextInfo.lesson.querySelector('.subject-title')?.textContent?.trim() || 'Занятие';
+            const subgroup = nextInfo.lesson.getAttribute('data-subgroup');
+            const subgroupText = subgroup && subgroup !== 'all' ? `П/г ${subgroup} • ` : '';
+            const dayName = fullDayNames[nextInfo.dayId] || nextInfo.dayId;
+            const dateText = `${nextInfo.date.getDate()} ${fullMonthNames[nextInfo.date.getMonth()]}`;
+            const timeText = range ? `${String(Math.floor(range.start / 60)).padStart(2, '0')}:${String(range.start % 60).padStart(2, '0')}` : '';
+            return `<div class="next-study-card"><span class="next-study-label">Следующий учебный день</span><div class="next-study-title">${dayName}, ${dateText} • ${nextInfo.weekNum} нед.</div><div class="next-study-meta">${subgroupText}${timeText ? `${timeText} — ` : ''}${title}</div></div>`;
+        }
+        function openDayForWeek(dayId, weekNum, highlight = true) {
+            displayedWeekNum = weekNum;
+            updateScheduleUI();
+            const btn = document.querySelector(`.tab-btn[data-day="${dayId}"]`);
+            showDay(dayId, btn);
+            btn?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            if (highlight) {
+                const card = document.getElementById(dayId);
+                if (card) {
+                    card.classList.remove('just-opened');
+                    void card.offsetWidth;
+                    card.classList.add('just-opened');
+                    setTimeout(() => card.classList.remove('just-opened'), 700);
+                }
+            }
+        }
+        function goToNextStudyDay() {
+            const nextInfo = findNextStudyDay(getMskDate(), true, currentSubgroupFilter);
+            if (!nextInfo) return;
+            openDayForWeek(nextInfo.dayId, nextInfo.weekNum, true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         /* Темы */
         const themeToggle = document.getElementById('theme-toggle');
@@ -1428,15 +1935,12 @@
             }
         }
 
-        /* Живой статус: текущая и следующая пара с учетом подгрупп и календарных ограничений */
+        /* Живой статус: текущая/следующая пара + ближайший следующий учебный день. */
         function updateLiveStatus() {
             const mskDate = getMskDate();
             const dayIdx = mskDate.getDay();
-            const hours = mskDate.getHours();
-            const minutes = mskDate.getMinutes();
-            const currentMins = hours * 60 + minutes;
-            const timeStr = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
-
+            const currentMins = mskDate.getHours() * 60 + mskDate.getMinutes();
+            const timeStr = `${String(mskDate.getHours()).padStart(2, '0')}:${String(mskDate.getMinutes()).padStart(2, '0')}`;
             const daysMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
             const currentDayId = daysMap[dayIdx];
             const banner = document.getElementById('live-banner');
@@ -1445,35 +1949,26 @@
 
             if (currentDayId === 'sunday') {
                 setBannerState('off');
-                banner.innerHTML = `<strong>🕒 ${timeStr} (МСК):</strong> Воскресенье, пар нет. Отдыхаем! 🎉`;
+                const nextStudyDay = findNextStudyDay(mskDate, true, currentSubgroupFilter);
+                banner.innerHTML = `<span class="live-kicker">Сегодня • ${timeStr} МСК</span><span class="live-title">Воскресенье, пар нет. Отдыхаем! 🎉</span>${formatNextStudyDay(nextStudyDay)}`;
                 return;
             }
 
             const dayCard = document.getElementById(currentDayId);
             if (!dayCard) return;
-
-            const isEvenReal = (currentRealWeekNum % 2 === 0);
-            const todayMsk = new Date(mskDate.getFullYear(), mskDate.getMonth(), mskDate.getDate(), 12, 0, 0);
             const events = [];
-
             dayCard.querySelectorAll('.lesson').forEach(lesson => {
-                const wType = lesson.getAttribute('data-week-type');
-                if (wType === 'even' && !isEvenReal) return;
-                if (wType === 'odd' && isEvenReal) return;
-                if (!isLessonAllowedOnDate(lesson, todayMsk)) return;
-
+                if (!isLessonApplicableForContext(lesson, currentRealWeekNum, 'all')) return;
                 const range = getLessonTimeRange(lesson);
                 if (!range) return;
-
                 events.push({
                     lesson,
                     start: range.start,
                     end: range.end,
                     subgroup: lesson.getAttribute('data-subgroup'),
-                    contentHTML: lesson.querySelector('.subject-info').innerHTML
+                    contentHTML: lesson.querySelector('.subject-info')?.innerHTML || ''
                 });
             });
-
             events.sort((a, b) => a.start - b.start || a.end - b.end);
 
             const activeForSub1 = events.filter(e => e.start <= currentMins && e.end >= currentMins && (e.subgroup === 'all' || e.subgroup === '1'));
@@ -1481,66 +1976,52 @@
             const nextForSub1 = events.find(e => e.start > currentMins && (e.subgroup === 'all' || e.subgroup === '1')) || null;
             const nextForSub2 = events.find(e => e.start > currentMins && (e.subgroup === 'all' || e.subgroup === '2')) || null;
 
-            const renderEvent = (event) => event ? event.contentHTML : '';
             const sameEvent = (a, b) => a && b && a.start === b.start && a.end === b.end && a.contentHTML === b.contentHTML;
-            const formatStart = (event) => {
-                const h = Math.floor(event.start / 60);
-                const m = event.start % 60;
-                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-            };
+            const formatStart = (event) => `${String(Math.floor(event.start / 60)).padStart(2, '0')}:${String(event.start % 60).padStart(2, '0')}`;
+            const nextDayHtml = () => formatNextStudyDay(findNextStudyDay(mskDate, true, currentSubgroupFilter));
 
             function renderNextBlock(next1, next2, compact = false) {
                 if (!next1 && !next2) {
-                    return compact
-                        ? `<div style="margin-top: 10px; opacity: .9;"><strong>Далее:</strong> на сегодня пары закончились.</div>`
-                        : `<strong>🕒 ${timeStr} (МСК):</strong> На сегодня пары закончились. 🎉`;
+                    const finishedText = compact
+                        ? `<div style="margin-top:10px;opacity:.9;"><strong>Далее:</strong> на сегодня пары закончились.</div>`
+                        : `<span class="live-kicker">Сегодня • ${timeStr} МСК</span><span class="live-title">На сегодня пары закончились. 🎉</span>`;
+                    return finishedText + nextDayHtml();
                 }
-
                 if (sameEvent(next1, next2) || (next1 && !next2) || (!next1 && next2)) {
                     const event = next1 || next2;
                     const wait = event.start - currentMins;
-                    const prefix = compact ? 'Далее' : `🕒 ${timeStr} (МСК) — Следующая пара`;
-                    return `<div${compact ? ' style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.25);"' : ''}><strong>${prefix}: ${formatStart(event)} • через ${formatDuration(wait)}</strong><div class="subject-info" style="margin-top: 4px;">${renderEvent(event)}</div></div>`;
+                    if (compact) {
+                        return `<div class="live-secondary"><strong>Далее: ${formatStart(event)} • через ${formatDuration(wait)}</strong><div class="subject-info" style="margin-top:4px;">${event.contentHTML}</div></div>`;
+                    }
+                    return `<span class="live-kicker">Сегодня • ${timeStr} МСК</span><span class="live-title">Следующая пара: ${formatStart(event)} • через ${formatDuration(wait)}</span><div class="subject-info" style="margin-top:5px;">${event.contentHTML}</div>`;
                 }
-
-                let html = `<div${compact ? ' style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.25);"' : ''}>`;
-                html += `<strong>${compact ? 'Далее' : `🕒 ${timeStr} (МСК) — Следующие пары`}:</strong>`;
-                html += `<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">`;
-                if (next1) {
-                    html += `<div><strong style="color:#fff;">Подгруппа 1 • ${formatStart(next1)} • через ${formatDuration(next1.start - currentMins)}</strong><div class="subject-info">${renderEvent(next1)}</div></div>`;
-                } else {
-                    html += `<div><strong style="color:#fff;">Подгруппа 1:</strong> на сегодня пары закончились.</div>`;
-                }
-                if (next2) {
-                    html += `<div><strong style="color:#fff;">Подгруппа 2 • ${formatStart(next2)} • через ${formatDuration(next2.start - currentMins)}</strong><div class="subject-info">${renderEvent(next2)}</div></div>`;
-                } else {
-                    html += `<div><strong style="color:#fff;">Подгруппа 2:</strong> на сегодня пары закончились.</div>`;
-                }
-                html += `</div></div>`;
+                let html = compact ? `<div class="live-secondary"><strong>Далее:</strong>` : `<span class="live-kicker">Сегодня • ${timeStr} МСК</span><span class="live-title">Следующие пары</span>`;
+                html += `<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">`;
+                if (next1) html += `<div><strong style="color:#fff;">Подгруппа 1 • ${formatStart(next1)} • через ${formatDuration(next1.start - currentMins)}</strong><div class="subject-info">${next1.contentHTML}</div></div>`;
+                else html += `<div><strong style="color:#fff;">Подгруппа 1:</strong> на сегодня пары закончились.</div>`;
+                if (next2) html += `<div><strong style="color:#fff;">Подгруппа 2 • ${formatStart(next2)} • через ${formatDuration(next2.start - currentMins)}</strong><div class="subject-info">${next2.contentHTML}</div></div>`;
+                else html += `<div><strong style="color:#fff;">Подгруппа 2:</strong> на сегодня пары закончились.</div>`;
+                html += `</div>${compact ? '</div>' : ''}`;
                 return html;
             }
 
-            if (activeForSub1.length > 0 || activeForSub2.length > 0) {
+            if (activeForSub1.length || activeForSub2.length) {
                 setBannerState('active');
                 const firstActive = activeForSub1[0] || activeForSub2[0];
                 const timeLeftMin = Math.max(0, firstActive.end - currentMins);
-                let htmlOutput = `<div style="margin-bottom: 6px;"><strong>🕒 ${timeStr} (МСК) — Идёт пара (осталось ${formatDuration(timeLeftMin)}):</strong></div>`;
-
+                let htmlOutput = `<span class="live-kicker">Сейчас • ${timeStr} МСК</span><span class="live-title">Идёт пара • осталось ${formatDuration(timeLeftMin)}</span>`;
                 const content1 = activeForSub1.map(e => e.contentHTML);
                 const content2 = activeForSub2.map(e => e.contentHTML);
                 const isIdentical = JSON.stringify(content1) === JSON.stringify(content2);
-
                 if (isIdentical || activeForSub2.length === 0) {
-                    htmlOutput += `<div class="subject-info">${content1[0]}</div>`;
+                    htmlOutput += `<div class="subject-info" style="margin-top:5px;">${content1[0]}</div>`;
                 } else if (activeForSub1.length === 0) {
-                    htmlOutput += `<div class="subject-info">${content2[0]}</div>`;
+                    htmlOutput += `<div class="subject-info" style="margin-top:5px;">${content2[0]}</div>`;
                 } else {
-                    htmlOutput += `<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">`;
-                    htmlOutput += `<div><span style="font-weight: bold; color: #fff; text-decoration: underline;">Подгруппа 1:</span><div class="subject-info" style="margin-top: 2px;">${content1.join('<br>')}</div></div>`;
-                    htmlOutput += `<div><span style="font-weight: bold; color: #fff; text-decoration: underline;">Подгруппа 2:</span><div class="subject-info" style="margin-top: 2px;">${content2.join('<br>')}</div></div>`;
-                    htmlOutput += `</div>`;
+                    htmlOutput += `<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">`;
+                    htmlOutput += `<div><strong style="color:#fff;">Подгруппа 1:</strong><div class="subject-info">${content1.join('<br>')}</div></div>`;
+                    htmlOutput += `<div><strong style="color:#fff;">Подгруппа 2:</strong><div class="subject-info">${content2.join('<br>')}</div></div></div>`;
                 }
-
                 htmlOutput += renderNextBlock(nextForSub1, nextForSub2, true);
                 banner.innerHTML = htmlOutput;
             } else {
